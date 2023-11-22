@@ -5,6 +5,7 @@ import { EnvelopeIcon, EyeIcon, EyeslashIcon, LockIcon } from '@/icons'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { resetPassword } from '@/services/auth'
 
 export default function Login() {
   const searchParams = useSearchParams()
@@ -16,6 +17,7 @@ export default function Login() {
     password: '',
     confirm_password: '',
   })
+  const [isLoading, setIsLoading] = useState(false)
 
   const [passwordShown, setPasswordShown] = useState({
     password: false,
@@ -25,10 +27,13 @@ export default function Login() {
   const handlePayload = (state, val) => {
     setPayload({ ...payload, [state]: val })
   }
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault()
     // TODO ...
     console.log({ payload })
+    setIsLoading(true)
+    const resp = await resetPassword(payload)
+    setIsLoading(false)
   }
 
   useEffect(() => {
@@ -52,7 +57,7 @@ export default function Login() {
           <div className="relative mt-2 rounded-md shadow-sm">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
               <EnvelopeIcon
-                className="h-5 w-5 text-gray-400"
+                className="text-gray-400 h-5 w-5"
                 aria-hidden="true"
               />
             </div>
@@ -61,7 +66,7 @@ export default function Login() {
               type="email"
               name="email"
               id="email"
-              className="placeholder:text-blue block w-full rounded-md border-0 py-1.5 pl-12 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              className="text-gray-900 ring-gray-300 focus:ring-indigo-600 block w-full rounded-md border-0 py-1.5 pl-12 ring-1 ring-inset placeholder:text-blue-theme focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
               placeholder="Masukkan email anda"
               onChange={(e) => handlePayload('email', e.target.value)}
             />
@@ -69,13 +74,13 @@ export default function Login() {
           <div className="mt-3 flex flex-row justify-end gap-3">
             <Link
               href="/login"
-              className="rounded rounded-lg bg-[red] px-2 py-1 text-sm font-semibold uppercase tracking-widest text-[white] shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+              className="ring-gray-300 hover:bg-gray-50 rounded rounded-lg bg-[red] px-2 py-1 text-sm font-semibold uppercase tracking-widest text-[white] shadow-sm ring-1 ring-inset"
             >
               Batal
             </Link>
             <button
               type="submit"
-              className="bg-lightblue2 rounded rounded-lg px-2 py-1 text-sm font-semibold uppercase tracking-widest text-[white] shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+              className="ring-gray-300 hover:bg-gray-50 rounded rounded-lg bg-lightblue2-theme px-2 py-1 text-sm font-semibold uppercase tracking-widest text-[white] shadow-sm ring-1 ring-inset"
             >
               Kirim
             </button>
@@ -86,12 +91,12 @@ export default function Login() {
 
     return (
       <React.Fragment>
-        <div className='flex flex-col gap-3'>
+        <div className="flex flex-col gap-3">
           <div>
             <div className="relative mt-2 rounded-md shadow-sm">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <LockIcon
-                  className="h-5 w-5 text-gray-400"
+                  className="text-gray-400 h-5 w-5"
                   aria-hidden="true"
                 />
               </div>
@@ -100,7 +105,7 @@ export default function Login() {
                 type={passwordShown.password ? 'text' : 'password'}
                 name="password"
                 id="password"
-                className="border-1 placeholder:text-blue block w-full rounded-md py-1.5 pl-12 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="border-1 text-gray-900 ring-gray-300 focus:ring-indigo-600 block w-full rounded-md py-1.5 pl-12 pr-12 ring-1 ring-inset placeholder:text-blue-theme focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
                 placeholder="Masukkan kata sandi anda"
                 onChange={(e) => handlePayload('password', e.target.value)}
               />
@@ -110,12 +115,12 @@ export default function Login() {
               >
                 {passwordShown.password ? (
                   <EyeslashIcon
-                    className="h-5 w-5 text-gray-400"
+                    className="text-gray-400 h-5 w-5"
                     aria-hidden="true"
                   />
                 ) : (
                   <EyeIcon
-                    className="h-5 w-5 text-gray-400"
+                    className="text-gray-400 h-5 w-5"
                     aria-hidden="true"
                   />
                 )}
@@ -127,7 +132,7 @@ export default function Login() {
             <div className="relative mt-2 rounded-md shadow-sm">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <LockIcon
-                  className="h-5 w-5 text-gray-400"
+                  className="text-gray-400 h-5 w-5"
                   aria-hidden="true"
                 />
               </div>
@@ -136,7 +141,7 @@ export default function Login() {
                 type={passwordShown.confirm_password ? 'text' : 'password'}
                 name="password"
                 id="password"
-                className="border-1 placeholder:text-blue block w-full rounded-md py-1.5 pl-12 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="border-1 text-gray-900 ring-gray-300 focus:ring-indigo-600 block w-full rounded-md py-1.5 pl-12 pr-12 ring-1 ring-inset placeholder:text-blue-theme focus:ring-2 focus:ring-inset sm:text-sm sm:leading-6"
                 placeholder="Masukkan kata sandi anda"
                 onChange={(e) => handlePayload('password', e.target.value)}
               />
@@ -146,12 +151,12 @@ export default function Login() {
               >
                 {passwordShown.confirm_password ? (
                   <EyeslashIcon
-                    className="h-5 w-5 text-gray-400"
+                    className="text-gray-400 h-5 w-5"
                     aria-hidden="true"
                   />
                 ) : (
                   <EyeIcon
-                    className="h-5 w-5 text-gray-400"
+                    className="text-gray-400 h-5 w-5"
                     aria-hidden="true"
                   />
                 )}
@@ -160,8 +165,9 @@ export default function Login() {
           </div>
         </div>
         <button
+          disabled={isLoading}
           type="submit"
-          className="text-blue rounded rounded-lg bg-[white] bg-white px-2 py-1 text-sm font-semibold uppercase tracking-widest text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          className="bg-white text-gray-900 ring-gray-300 hover:bg-gray-50 rounded rounded-lg bg-[white] px-2 py-1 text-sm font-semibold uppercase tracking-widest text-blue-theme shadow-sm ring-1 ring-inset"
         >
           Simpan
         </button>

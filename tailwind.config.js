@@ -20,11 +20,6 @@ module.exports = {
       '8xl': ['6rem', { lineHeight: '1' }],
       '9xl': ['8rem', { lineHeight: '1' }],
     },
-    colors: {
-      'blue': '#5669CC',
-      'red': '#F24822',
-      'lightblue2': '#0D99FF'
-    },
     extend: {
       borderRadius: {
         '4xl': '2rem',
@@ -36,7 +31,17 @@ module.exports = {
       maxWidth: {
         '2xl': '40rem',
       },
+      colors: {
+        'blue-theme': '#5669CC',
+        'red-theme': '#F24822',
+        'lightblue2-theme': '#0D99FF'
+      },
+      backgroundColor: {
+        'blue': '#5669CC',
+        'red': '#F24822',
+        'lightblue2': '#0D99FF'
+      }
     },
   },
-  plugins: [formsPlugin, headlessuiPlugin],
+  plugins: [formsPlugin, headlessuiPlugin]
 }
