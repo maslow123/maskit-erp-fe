@@ -1,32 +1,42 @@
 'use client'
-import { Fragment, useState } from 'react'
-import { Dialog, Menu, Transition } from '@headlessui/react'
-import {
-  Bars3Icon,
-  BellIcon,
-  CalendarIcon,
-  ChartPieIcon,
-  Cog6ToothIcon,
-  DocumentDuplicateIcon,
-  FolderIcon,
-  HomeIcon,
-  UsersIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline'
-import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import { useState } from 'react'
 import { Sidebar } from '@/components/Sidebar'
 import { Navbar } from '@/components/Navbar'
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
-}
+import { HomeIcon } from '@heroicons/react/24/outline'
 
 export default function Dashboard() {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
   return (
     <>
       <div>
-        <Sidebar />
-        <Navbar />
+        <Sidebar
+          sidebarOpen={sidebarOpen}
+          onSidebarOpen={(sidebarIsOpen) => {
+            setSidebarOpen(sidebarIsOpen)
+            console.log(sidebarIsOpen)
+          }}
+        />
+        <Navbar
+          breadcrumbs={[
+            { name: 'Dashboard', href: '/dashboard', current: false },
+            // { name: 'Project Nero', href: '#', current: true },
+          ]}
+          breadcrumbIcon={
+            <HomeIcon
+              className="h-5 w-5 flex-shrink-0"
+              aria-hidden="true"
+            />
+          }
+          title={'Dashboard'}
+          sidebarOpen={sidebarOpen}
+          onSidebarOpen={(sidebarIsOpen) => {
+            setSidebarOpen(sidebarIsOpen)
+            console.log(sidebarIsOpen)
+          }}
+        >
+          Sample Content
+        </Navbar>
       </div>
     </>
   )

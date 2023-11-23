@@ -107,7 +107,7 @@ function Feature({ feature, isActive, className, ...props }) {
       <div
         className={clsx(
           'w-9 rounded-lg',
-          isActive ? 'bg-blue-theme-600' : 'bg-slate-500',
+          isActive ? 'bg-blue-600' : 'bg-slate-500',
         )}
       >
         <svg aria-hidden="true" className="h-9 w-9" fill="none">

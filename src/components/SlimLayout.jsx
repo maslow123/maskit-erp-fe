@@ -12,7 +12,7 @@ export function SlimLayout({ children }) {
             alt=""
           />
         </div>
-        <div className="sm:flex sm:justify-center bg-blue-theme relative z-10 flex flex-1 flex-col bg-white px-4 py-10 shadow-2xl">
+        <div className="sm:flex sm:justify-center bg-blue relative z-10 flex flex-1 flex-col bg-white px-4 py-10 shadow-2xl">
           <main className="mx-auto w-full max-w-md sm:px-4 md:w-96 md:max-w-sm md:px-0">
             {children}
           </main>

@@ -11,7 +11,13 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export function Navbar() {
+export function Navbar({ 
+  children, 
+  breadcrumbs,
+  breadcrumbIcon, 
+  onSidebarOpen, 
+  sidebarOpen 
+}) {
   const router = useRouter()
   const ctx = useAuth()
 
@@ -19,7 +25,6 @@ export function Navbar() {
     await logout(ctx, router)
   }
 
-  
   const userNavigation = [
     { name: 'Your profile', href: '#', onClick: () => {} },
     { name: 'Sign out', href: '#', onClick: onLogout },
@@ -27,34 +32,71 @@ export function Navbar() {
   return (
     <div>
       <div className="lg:pl-72">
-        <div className="border-gray-200 bg-white sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
           <button
             type="button"
-            className="text-gray-700 -m-2.5 p-2.5 lg:hidden"
-            onClick={() => setSidebarOpen(true)}
+            className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
+            onClick={() => onSidebarOpen(!sidebarOpen)}
           >
             <span className="sr-only">Open sidebar</span>
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />
           </button>
-
-          {/* Separator */}
           <div
-            className="bg-gray-900/10 h-6 w-px lg:hidden"
+            className="h-6 w-px bg-gray-900/10 lg:hidden"
             aria-hidden="true"
           />
-
-          <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
+          <nav
+            className="flex border-b border-gray-200 bg-white"
+            aria-label="Breadcrumb"
+          >
+            <ol
+              role="list"
+              className="mx-auto flex w-full max-w-screen-xl space-x-4 px-4 sm:px-6 lg:px-8"
+            >
+              <li className="flex">
+                <div className="flex items-center">
+                  <a href="#" className="text-gray-400 hover:text-gray-500">
+                    {breadcrumbIcon}
+                    <span className="sr-only">Home</span>
+                  </a>
+                </div>
+              </li>
+              {breadcrumbs.map((page) => (
+                <li key={page.name} className="flex">
+                  <div className="flex items-center">
+                    <svg
+                      className="h-full w-6 flex-shrink-0 text-gray-200"
+                      viewBox="0 0 24 44"
+                      preserveAspectRatio="none"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path d="M.293 0l22 22-22 22h1.414l22-22-22-22H.293z" />
+                    </svg>
+                    <a
+                      href={page.href}
+                      className="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700"
+                      aria-current={page.current ? 'page' : undefined}
+                    >
+                      {page.name}
+                    </a>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </nav>
+          <div className="flex flex-1 gap-x-5 self-stretch lg:gap-x-6">
             <form className="relative flex flex-1" action="#" method="GET">
               <label htmlFor="search-field" className="sr-only">
                 Search
               </label>
               <MagnifyingGlassIcon
-                className="text-gray-400 pointer-events-none absolute inset-y-0 left-0 h-full w-5"
+                className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
                 aria-hidden="true"
               />
               <input
                 id="search-field"
-                className="text-gray-900 placeholder:text-gray-400 block h-full w-full border-0 py-0 pl-8 pr-0 focus:ring-0 sm:text-sm"
+                className="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
                 placeholder="Search..."
                 type="search"
                 name="search"
@@ -63,7 +105,7 @@ export function Navbar() {
             <div className="flex items-center gap-x-4 lg:gap-x-6">
               <button
                 type="button"
-                className="text-gray-400 hover:text-gray-500 -m-2.5 p-2.5"
+                className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
               >
                 <span className="sr-only">View notifications</span>
                 <BellIcon className="h-6 w-6" aria-hidden="true" />
@@ -71,7 +113,7 @@ export function Navbar() {
 
               {/* Separator */}
               <div
-                className="lg:bg-gray-900/10 hidden lg:block lg:h-6 lg:w-px"
+                className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10"
                 aria-hidden="true"
               />
 
@@ -80,19 +122,19 @@ export function Navbar() {
                 <Menu.Button className="-m-1.5 flex items-center p-1.5">
                   <span className="sr-only">Open user menu</span>
                   <img
-                    className="bg-gray-50 h-8 w-8 rounded-full"
+                    className="h-8 w-8 rounded-full bg-gray-50"
                     src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                     alt=""
-                  />                  
+                  />
                   <span className="hidden lg:flex lg:items-center">
                     <span
-                      className="text-gray-900 ml-4 text-sm font-semibold leading-6"
+                      className="ml-4 text-sm font-semibold leading-6 text-gray-900"
                       aria-hidden="true"
                     >
                       Tom Cook
                     </span>
                     <ChevronDownIcon
-                      className="text-gray-400 ml-2 h-5 w-5"
+                      className="ml-2 h-5 w-5 text-gray-400"
                       aria-hidden="true"
                     />
                   </span>
@@ -106,7 +148,7 @@ export function Navbar() {
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
-                  <Menu.Items className="bg-white ring-gray-900/5 absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md py-2 shadow-lg ring-1 focus:outline-none">
+                  <Menu.Items className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                     {userNavigation.map((item) => (
                       <Menu.Item key={item.name}>
                         {({ active }) => (
@@ -115,7 +157,7 @@ export function Navbar() {
                             onClick={item.onClick}
                             className={classNames(
                               active ? 'bg-gray-50' : '',
-                              'text-gray-900 block px-3 py-1 text-sm leading-6',
+                              'block px-3 py-1 text-sm leading-6 text-gray-900',
                             )}
                           >
                             {item.name}
@@ -131,7 +173,7 @@ export function Navbar() {
         </div>
 
         <main className="py-10">
-          <div className="px-4 sm:px-6 lg:px-8">{/* Your content */}</div>
+          <div className="px-4 sm:px-6 lg:px-8">{children}</div>
         </main>
       </div>
     </div>

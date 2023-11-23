@@ -1,0 +1,11 @@
+.rdt_Table {
+    @apply min-w-full divide-y divide-gray-300
+}
+
+.rdt_TableHeadRow {
+    @apply bg-gray-50 #{!important};
+}
+
+.rdt_TableCell {
+    // @apply divide-y divide-gray-200 bg-white;
+}

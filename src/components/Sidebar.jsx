@@ -10,33 +10,69 @@ import {
   ServerStackIcon,
   XMarkIcon,
   ShoppingCartIcon,
+  ArrowRightCircleIcon,
+  ArrowRightOnRectangleIcon,
 } from '@heroicons/react/24/outline'
 import erp_logo from '@/images/logos/erp-logo.png'
 import Image from 'next/image'
-
-const navigation = [
-  { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
-  { name: 'Pembelian', href: '#', icon: ShoppingCartIcon, current: false },
-  { name: 'Persediaan', href: '#', icon: ServerStackIcon, current: false },
-  { name: 'Produksi', href: '#', icon: BeakerIcon, current: false },
-  { name: 'Penjualan', href: '#', icon: DocumentChartBarIcon, current: false },
-  { name: 'Keuangan', href: '#', icon: ChartBarIcon, current: false },
-  { name: 'Pengaturan', href: '#', icon: Cog6ToothIcon, current: false },
-]
+import { CheckCircleIcon } from '@/icons'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export function Sidebar() {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+export function Sidebar({ onSidebarOpen, sidebarOpen, tab }) {
+  const navigation = [
+    {
+      name: 'Dashboard',
+      href: '/dashboard',
+      icon: HomeIcon,
+      current: tab === 'dashboard',
+    },
+    {
+      name: 'Pembelian',
+      href: '#',
+      icon: ShoppingCartIcon,
+      current: tab === 'dashboard',
+    },
+    {
+      name: 'Persediaan',
+      href: '#',
+      icon: ServerStackIcon,
+      current: tab === 'dashboard',
+    },
+    {
+      name: 'Produksi',
+      href: '#',
+      icon: BeakerIcon,
+      current: tab === 'dashboard',
+    },
+    {
+      name: 'Penjualan',
+      href: '#',
+      icon: DocumentChartBarIcon,
+      current: tab === 'dashboard',
+    },
+    {
+      name: 'Keuangan',
+      href: '#',
+      icon: ChartBarIcon,
+      current: tab === 'dashboard',
+    },
+    {
+      name: 'Pengaturan',
+      href: '/settings',
+      icon: Cog6ToothIcon,
+      current: tab === 'settings',
+    },
+  ]
   return (
     <div>
       <Transition.Root show={sidebarOpen} as={Fragment}>
         <Dialog
           as="div"
           className="relative z-50 lg:hidden"
-          onClose={setSidebarOpen}
+          onClose={() => onSidebarOpen(!sidebarOpen)}
         >
           <Transition.Child
             as={Fragment}
@@ -47,7 +83,7 @@ export function Sidebar() {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="bg-gray-900/80 fixed inset-0" />
+            <div className="fixed inset-0 bg-gray-900/80" />
           </Transition.Child>
 
           <div className="fixed inset-0 flex">
@@ -74,18 +110,18 @@ export function Sidebar() {
                     <button
                       type="button"
                       className="-m-2.5 p-2.5"
-                      onClick={() => setSidebarOpen(false)}
+                      onClick={() => onSidebarOpen(false)}
                     >
                       <span className="sr-only">Close sidebar</span>
                       <XMarkIcon
-                        className="text-white h-6 w-6"
+                        className="h-6 w-6 text-white"
                         aria-hidden="true"
                       />
                     </button>
                   </div>
                 </Transition.Child>
                 {/* Sidebar component, swap this element with another sidebar if you like */}
-                <div className="bg-blue-theme text-white flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4">
+                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-blue px-6 pb-4 text-white">
                   <div className="flex h-16 shrink-0 items-center">
                     {/* <img
                       className="h-8 w-auto"
@@ -93,7 +129,7 @@ export function Sidebar() {
                       alt="Your Company"
                     /> */}
                     <Image
-                      className="bg-gray-50 h-8 w-8 rounded-full"
+                      className="h-8 w-8 rounded-full bg-gray-50"
                       src={erp_logo}
                       alt=""
                     />
@@ -108,8 +144,8 @@ export function Sidebar() {
                                 href={item.href}
                                 className={classNames(
                                   item.current
-                                    ? 'bg-blue-theme text-white'
-                                    : 'text-indigo-200 hover:text-white hover:bg-blue-theme',
+                                    ? 'bg-blue text-white'
+                                    : 'text-indigo-200 hover:bg-blue hover:text-white',
                                   'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
                                 )}
                               >
@@ -131,10 +167,10 @@ export function Sidebar() {
                       <li className="mt-auto">
                         <a
                           href="#"
-                          className="text-indigo-200 hover:bg-blue-theme hover:text-white group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                          className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-200 hover:bg-blue hover:text-white"
                         >
                           <Cog6ToothIcon
-                            className="text-indigo-200 group-hover:text-white h-6 w-6 shrink-0"
+                            className="h-6 w-6 shrink-0 text-indigo-200 group-hover:text-white"
                             aria-hidden="true"
                           />
                           Settings
@@ -149,13 +185,9 @@ export function Sidebar() {
         </Dialog>
       </Transition.Root>
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-        <div className="bg-blue-theme text-white flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4">
-          <div className="flex h-16 shrink-0 items-center">            
-            <Image
-              className="rounded-full ml-[50px]"
-              src={erp_logo}
-              alt=""
-            />
+        <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-blue px-6 pb-4 text-white">
+          <div className="flex h-16 shrink-0 items-center">
+            <Image className="ml-[50px] rounded-full" src={erp_logo} alt="" />
           </div>
           <nav className="flex flex-1 flex-col">
             <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -167,8 +199,8 @@ export function Sidebar() {
                         href={item.href}
                         className={classNames(
                           item.current
-                            ? 'bg-blue-theme text-white'
-                            : 'text-indigo-200 hover:text-white hover:bg-blue-theme',
+                            ? 'bg-blue text-white'
+                            : 'text-indigo-200 hover:bg-blue hover:text-white',
                           'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
                         )}
                       >
@@ -188,16 +220,16 @@ export function Sidebar() {
                 </ul>
               </li>
               <li className="mt-auto">
-                <a
-                  href="#"
-                  className="text-indigo-200 hover:bg-blue-theme hover:text-white group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                <button
+                  type="button"
+                  className="inline-flex text-bluessss items-center gap-x-1.5 rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm"
                 >
-                  <Cog6ToothIcon
-                    className="text-indigo-200 group-hover:text-white h-6 w-6 shrink-0"
+                  <ArrowRightOnRectangleIcon
+                    className="-ml-0.5 h-5 w-5"
                     aria-hidden="true"
                   />
-                  Settings
-                </a>
+                  Logout
+                </button>
               </li>
             </ul>
           </nav>

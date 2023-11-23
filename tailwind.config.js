@@ -33,6 +33,7 @@ module.exports = {
       },
       colors: {
         'blue-theme': '#5669CC',
+        'bluessss': '#5669CC',
         'red-theme': '#F24822',
         'lightblue2-theme': '#0D99FF'
       },
