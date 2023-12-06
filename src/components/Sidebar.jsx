@@ -222,7 +222,7 @@ export function Sidebar({ onSidebarOpen, sidebarOpen, tab }) {
               <li className="mt-auto">
                 <button
                   type="button"
-                  className="inline-flex text-bluessss items-center gap-x-1.5 rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm"
+                  className="inline-flex text-blue-theme items-center gap-x-1.5 rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold shadow-sm"
                 >
                   <ArrowRightOnRectangleIcon
                     className="-ml-0.5 h-5 w-5"
