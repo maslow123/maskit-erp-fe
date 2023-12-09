@@ -13,57 +13,38 @@ import {
   PlusCircleIcon,
   TrashIcon
 } from '@heroicons/react/24/outline'
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
 import DataTable from 'react-data-table-component'
 import ModalForm from './ModalForm'
+import { useTable } from '@/hooks/use-table'
 
 export default function User() {
   const { user } = useAuth();
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [data, setData] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [totalRows, setTotalRows] = useState(0)
   const [form, setForm] = useState()
-  const [rowsPerPage, setRowsPerPage] = useState(10)
-  const [page, setPage] = useState(1)
 
-  const fetchData = async (query) => {
-    setLoading(true)
-    try {
-      const users = await getUserList(query)
-      setData(users.data.users)
-      setTotalRows(users.data.total_count)
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const reload = useCallback(() => {
-    setForm(undefined)
-
-    fetchData({
-      name: "",
-      organization_id: "",
-      offset: "",
-      limit: "",
-      include_deleted: false,
-    })
-  }, [])
-
-  useEffect(() => reload(), [])
-
-  useEffect(() => {
-    fetchData({
-      name: "",
-      organization_id: "",
-      offset: page,
-      limit: rowsPerPage,
-      include_deleted: false,
-    })
-  }, [page, rowsPerPage])
+  const {
+    data,
+    setData,
+    error,
+    setError,
+    loading,
+    setLoading,
+    totalRows,
+    setTotalRows,
+    rowsPerPage,
+    setRowsPerPage,
+    page,
+    setPage,
+    moreQuery,
+    setMoreQuery,
+    reload
+  } = useTable(getUserList, {
+    // name: "",
+    // organization_id: user.organization_id,
+    // include_deleted: false,
+  })
 
   const columns = [
     {
@@ -184,7 +165,7 @@ export default function User() {
                   <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
                     <DataTable
                       columns={columns}
-                      data={data}
+                      data={data?.users}
                       progressPending={loading}
                       pagination
                       paginationServer
