@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Sidebar } from '@/components/Sidebar'
 import { Navbar } from '@/components/Navbar'
 import {
@@ -13,45 +13,76 @@ import {
 import DataTable from 'react-data-table-component'
 import '@/styles/tailwind.scss'
 import { list } from '@/services/organizations'
-import { CheckCircleIcon } from '@/icons'
 import ModalPopup from '@/components/ModalPopup'
 import ModalForm from './ModalForm'
+import { debounce } from 'lodash'
 export default function Organizations() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(false)
   const [totalRows, setTotalRows] = useState(0)
   const [perPage, setPerPage] = useState(10)
-  const [modalVisible, setModalVisible] = useState(true)
+  const [page, setPage] = useState(1)
+  const [modalVisible, setModalVisible] = useState(false)
   const [organization, setOrganization] = useState({})
+  const [type, setType] = useState('')  
+  const [searchTerm, setSearchTerm] = useState('');
 
+  const isInitialRender = useRef(true)
+
+  useEffect(() => {
+    fetchData(page)
+  }, [])
+
+  const search = async (query) => {
+    // Implement your search logic here
+    console.log('Searching for:', query);
+    // fetchData(page)
+  };
+
+  // Debounced search function
+  const debouncedSearch = debounce(search, 1000); // Adjust the debounce delay as needed (300 milliseconds in this example)
+
+  const handleInputChange = (event) => {
+    const newSearchTerm = event.target.value;
+    setSearchTerm(newSearchTerm);
+    debouncedSearch(newSearchTerm);
+  };
+  
   const fetchData = async (page) => {
     setLoading(true)
     try {
-      const organizations = await list('')
-      console.log({ organizations })
+      const offset = (page - 1) * perPage;
+      const organizations = await list(page, offset, searchTerm)
       setData(organizations.data.organizations)
+      setTotalRows(organizations.data.total_count)
     } catch (e) {
       console.error(e)
     }
-    setTotalRows(10)
     setLoading(false)
   }
 
   const handlePageChange = (page) => {
+    setPage(page)
     fetchData(page)
   }
 
   const handlePerRowsChange = async (newPerPage, page) => {
     setLoading(true)
 
+    setPage(page)
     setPerPage(newPerPage)
     setLoading(false)
   }
 
-  useEffect(() => {    
-    setModalVisible(!modalVisible)
-  }, [organization])
+  useEffect(() => {
+    if (isInitialRender.current) {
+      isInitialRender.current = false
+      return
+    }
+
+    setModalVisible(true)
+  }, [organization, type])
   const columns = [
     {
       name: 'ID',
@@ -76,6 +107,7 @@ export default function Organizations() {
           <button
             onClick={() => {
               setOrganization({ ...row })
+              setType('view')
             }}
             type="button"
             class="inline-flex items-center gap-x-0.5 rounded-md bg-[#5A5252] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm hover:bg-[#5A5252] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
@@ -84,6 +116,10 @@ export default function Organizations() {
             Lihat
           </button>
           <button
+            onClick={() => {
+              setOrganization({ ...row })
+              setType('edit')
+            }}
             type="button"
             class="inline-flex items-center gap-x-0.5 rounded-md bg-[#FBBC04] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm hover:bg-[#FBBC04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FBBC04]"
           >
@@ -91,6 +127,10 @@ export default function Organizations() {
             Ubah
           </button>
           <button
+            onClick={() => {
+              setOrganization({ ...row })
+              setType('delete')
+            }}
             type="button"
             class="hover:bg-[#F24822]-500 focus-visible:outline-[#F24822]-600 inline-flex items-center gap-x-0.5 rounded-md bg-[#F24822] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
@@ -114,7 +154,6 @@ export default function Organizations() {
           sidebarOpen={sidebarOpen}
           onSidebarOpen={(sidebarIsOpen) => {
             setSidebarOpen(sidebarIsOpen)
-            console.log(sidebarIsOpen)
           }}
         />
         <Navbar
@@ -135,7 +174,6 @@ export default function Organizations() {
           sidebarOpen={sidebarOpen}
           onSidebarOpen={(sidebarIsOpen) => {
             setSidebarOpen(sidebarIsOpen)
-            console.log(sidebarIsOpen)
           }}
         >
           <div className="px-4 sm:px-6 lg:px-8">
@@ -145,7 +183,8 @@ export default function Organizations() {
                   type="button"
                   className="block flex items-center justify-between gap-1 rounded-md bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
                   onClick={() => {
-                    setModalVisible(!modalVisible)
+                    setOrganization({})
+                    setType('add')
                   }}
                 >
                   <PlusCircleIcon className="h-5 w-5 flex-shrink-0" />
@@ -163,31 +202,35 @@ export default function Organizations() {
                   placeholder="Cari Organisasi"
                   type="search"
                   name="search"
+                  value={searchTerm}
+                  onChange={handleInputChange}
                 />
               </form>
             </div>
             <div className="mt-8 flow-root">
               <ModalPopup
-                height={800}
+                height={type !== 'delete' ? 800 : 300}
                 visible={modalVisible}
                 onClose={(currentModalVisible) => {
                   setModalVisible(currentModalVisible)
-                  fetchData(1)
+                  fetchData(page)
                 }}
               >
-                <ModalForm 
-                  data={organization}                                  
+                <ModalForm
+                  type={type}
+                  data={organization}
                   onClose={(currentModalVisible) => {
                     setModalVisible(currentModalVisible)
-                    fetchData(1)
-                  }}/>
+                    fetchData(page)
+                  }}
+                />
               </ModalPopup>
               <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                   <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
                     <DataTable
                       columns={columns}
-                      data={data}
+                      data={data || []}
                       progressPending={loading}
                       pagination
                       paginationServer
