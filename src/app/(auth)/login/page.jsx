@@ -35,15 +35,21 @@ export default function Login() {
     setIsLoading(true)
     try {
       const resp = await login(payload)
-      if (resp.status !== status.OK) {        
+      if (resp.status !== status.OK) {
         showToast('error', resp.message)
         return
       }
-      
+
       Cookies.set('token', resp.data.token);
+      Cookies.set('user', JSON.stringify({
+        username: resp.data.username,
+        level: resp.data.level,
+        user_id: resp.data.user_id,
+        organization_id: "9f963c22-b841-4ccd-a87d-b4d69674e361",
+      }));
       setIsLoading(false)
       router.push('/dashboard');
-    } catch(e) {
+    } catch (e) {
       showToast('error', JSON.stringify(e))
     }
 

@@ -21,7 +21,7 @@ export default function Settings() {
     {
       title: 'Manajemen Pengguna',
       image: usersImage,
-      href: '#'
+      href: '/settings/user'
     },
     {
       title: 'xxxxx',
@@ -82,9 +82,7 @@ export default function Settings() {
                 <div className="flex w-full items-center justify-center space-x-6 p-6">
                   <div className="items-center truncate">
                     <div className="flex flex-col items-center gap-4 space-x-3">
-                      <h1 className="truncate text-2xl font-bold font-medium text-gray-900 ">
-                        {card.title}
-                      </h1>
+                      <h1 className="truncate text-2xl font-medium text-gray-900 ">{card.title}</h1>
                       <Image className="text-center" src={card.image} alt="" />
                     </div>
                   </div>
