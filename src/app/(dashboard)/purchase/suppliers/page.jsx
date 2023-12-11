@@ -25,15 +25,15 @@ import DataTable from 'react-data-table-component'
 import ModalForm from './ModalForm'
 import { useTable } from '@/hooks/use-table'
 import { Menu, Transition } from '@headlessui/react'
-import { classNames } from '@/util/helper'
-import { getSupplierList } from '@/services/suppliers'
+import { classNames, showToast } from '@/util/helper'
+import { deleteBatchSupplier, getSupplierList } from '@/services/suppliers'
 
 export default function Page() {
   const { user } = useAuth()
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [form, setForm] = useState()
-  const [type, setType] = useState()
+  const [deleteIds, setDeleteIds] = useState([])
   const {
     data,
     setData,
@@ -89,7 +89,7 @@ export default function Page() {
       selector: (row) => (
         <div className="flex flex-row flex-wrap justify-between gap-1">
           <button
-            // onClick={() => setType('edit')}
+            onClick={() => setForm({ ...row, type: 'edit' })}
             type="button"
             class="inline-flex items-center gap-x-0.5 rounded-md bg-[#FBBC04] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm hover:bg-[#FBBC04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FBBC04]"
           >
@@ -97,7 +97,7 @@ export default function Page() {
             Ubah
           </button>
           <button
-            onClick={() => setType('delete')}
+            onClick={() => setForm({ ...row, type: 'delete' })}
             type="button"
             class="hover:bg-[#F24822]-500 focus-visible:outline-[#F24822]-600 inline-flex items-center gap-x-0.5 rounded-md bg-[#F24822] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
@@ -107,7 +107,69 @@ export default function Page() {
         </div>
       ),
     },
+    {
+      name: (
+        <div className="w-full">
+          <input
+            type="checkbox"
+            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+            onChange={() => {
+              if (deleteIds.length === data?.suppliers.length) {
+                setDeleteIds([])
+                return
+              }
+
+              let ids = []
+              for (let supplier of data?.suppliers) {
+                ids = [...ids, supplier.id]
+              }
+
+              setDeleteIds([...ids])
+            }}
+          />
+        </div>
+      ),
+      selector: (row) => (
+        <input
+          name="delete"
+          type="checkbox"
+          checked={deleteIds.filter((id) => id === row.id).length > 0}
+          onChange={() => {
+            console.log({ row })
+            let temp = [...deleteIds]
+            const isExist = temp.find((id) => id === row.id)
+            if (isExist) {
+              temp = temp.filter((item) => item !== row.id)
+              setDeleteIds([...temp])
+            } else {
+              console.log('else')
+              temp = [...temp, row.id]
+              setDeleteIds([...temp])
+            }
+            console.log({ temp })
+          }}
+          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+        />
+      ),
+    },
   ]
+
+  const deleteBatch = async () => {
+    setLoading(true)
+    try {
+      const resp = await deleteBatchSupplier(deleteIds)
+      if (resp.status !== 200) {
+        throw new Error(resp.message)
+      }
+
+      showToast('success', resp.message)
+      reload()
+    } catch (err) {
+      showToast('error', err?.message || 'Something Wrong')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <>
@@ -152,8 +214,8 @@ export default function Page() {
                       phone_number: '',
                       email: '',
                       address: '',
+                      type: 'add',
                     })
-                    setType('add')
                   }}
                 >
                   <PlusCircleIcon className="h-5 w-5 flex-shrink-0" />
@@ -244,9 +306,59 @@ export default function Page() {
                 />
               </form>
             </div>
+            <div className="my-3 flex justify-end">
+              <Menu as="div" className="relative inline-block text-left">
+                <div>
+                  <Menu.Button 
+                    className="flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252] disabled:opacity-50"
+                    disabled={deleteIds.length < 1}
+                  >
+                    Aksi
+                    <ChevronDownIcon
+                      className="-mr-1 h-5 w-5 text-gray-400"
+                      aria-hidden="true"
+                    />
+                  </Menu.Button>
+                </div>
+
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <div className="rounded-full  py-1">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            onClick={deleteBatch}
+                            className={classNames(
+                              active
+                                ? 'bg-gray-100 text-gray-900'
+                                : 'text-gray-700',
+                              'group flex items-center rounded-full px-4 py-2 text-sm hover:bg-red hover:text-white',
+                            )}
+                          >
+                            Hapus
+                            <TrashIcon
+                              className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                              aria-hidden="true"
+                            />
+                          </a>
+                        )}
+                      </Menu.Item>
+                    </div>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            </div>
             <div className="mt-8 flow-root">
               <ModalPopup
-                height={600}
+                height={form?.type === 'delete' ? 200 : 600}
                 visible={form != undefined}
                 onClose={(currentModalVisible) => {
                   if (currentModalVisible) return
