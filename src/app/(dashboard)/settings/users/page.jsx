@@ -7,7 +7,6 @@ import { useAuth } from '@/context/auth'
 import { useTable } from '@/hooks/use-table'
 import { deleteUser, getUserList } from '@/services/user'
 import '@/styles/tailwind.scss'
-import { debounce } from '@/util/helper'
 import {
   Cog6ToothIcon,
   MagnifyingGlassIcon,
@@ -56,7 +55,7 @@ export default function User() {
     },
     user.level == "Super Admin" ? {
       name: 'Nama Usaha',
-      selector: (row) => row.level,
+      selector: (row) => row.organization_name,
     } : {
       name: 'Nama Pengguna',
       selector: (row) => row.name,
@@ -78,10 +77,7 @@ export default function User() {
             Ubah
           </button>
           <button
-            onClick={() => {
-              setForm({ ...row })
-              setType('delete')
-            }}
+            onClick={() => setDeleteId(row.id)}
             type="button"
             class="hover:bg-[#F24822]-500 focus-visible:outline-[#F24822]-600 inline-flex items-center gap-x-0.5 rounded-md bg-[#F24822] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
@@ -97,12 +93,14 @@ export default function User() {
     setLoading(true)
     try {
       const resp = await deleteUser(id)
+
       if (resp.status !== 200) {
         throw new Error(resp.message)
       }
 
+      setDeleteId(undefined)
+      reload()
       showToast('success', resp.message)
-      return onClose(false)
     } catch (err) {
       showToast('error', err?.message || "Something Wrong")
     } finally {
@@ -148,8 +146,7 @@ export default function User() {
                   className="flex items-center justify-between gap-1 rounded-md bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
                   onClick={() => {
                     setForm({
-                      id: null,
-                      level: null,
+                      ...(user.level == "Super Admin" ? { organization_name: null } : { name: null }),
                       name: null,
                       email: null,
                       password: null,
@@ -222,7 +219,7 @@ export default function User() {
       </div>
 
       <ModalPopup
-        height={450}
+        height={150}
         visible={deleteId}
         onClose={(currentModalVisible) => setDeleteId(undefined)}
       >
