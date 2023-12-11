@@ -41,7 +41,8 @@ export default function Login() {
         username: resp.data.username,
         level: resp.data.level,
         user_id: resp.data.user_id,
-        organization_id: "9f963c22-b841-4ccd-a87d-b4d69674e361",
+        org_id: resp.data.org_id,
+        org_name: resp.data.org_name,
       }));
       setIsLoading(false)
       window.location.href = '/dashboard';

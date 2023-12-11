@@ -44,8 +44,8 @@ export default function User() {
     reload
   } = useTable(getUserList, {
     // name: "",
-    // organization_id: user.organization_id,
-    // include_deleted: false,
+    organization_id: user.level == "Super Admin" ? "" : user.org_id,
+    include_deleted: false,
   })
 
   const columns = [
