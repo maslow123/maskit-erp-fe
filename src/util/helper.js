@@ -144,7 +144,7 @@ const classNames = (...classes) => {
 }
 
 export {
-    checkEmailFormat, ellipsisText, formatDate, formatMoney, getPartOfDay, getToken,
+    getToken,
     getTotalTransaction,
     hasError,
     checkEmailFormat,
