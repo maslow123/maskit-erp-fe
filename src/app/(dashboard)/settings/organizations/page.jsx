@@ -26,7 +26,7 @@ export default function Organizations() {
   const [modalVisible, setModalVisible] = useState(false)
   const [organization, setOrganization] = useState({})
   const [type, setType] = useState('')  
-  const [searchTerm, setSearchTerm] = useState('');
+  const [search, setSearch] = useState('');
 
   const isInitialRender = useRef(true)
 
@@ -34,26 +34,35 @@ export default function Organizations() {
     fetchData(page)
   }, [])
 
-  const search = async (query) => {
-    // Implement your search logic here
-    console.log('Searching for:', query);
-    // fetchData(page)
-  };
+  
+  useEffect(() => {
+    const getData = setTimeout(() => {
+      fetchData(page)
+    }, 500)
 
-  // Debounced search function
-  const debouncedSearch = debounce(search, 1000); // Adjust the debounce delay as needed (300 milliseconds in this example)
+    return () => clearTimeout(getData)
+}, [search])
 
-  const handleInputChange = (event) => {
-    const newSearchTerm = event.target.value;
-    setSearchTerm(newSearchTerm);
-    debouncedSearch(newSearchTerm);
-  };
+  useEffect(() => {
+    fetchData(1) // fetch page 1 of users
+  }, [])
+
+  
+  useEffect(() => {
+    if (isInitialRender.current) {
+      isInitialRender.current = false
+      return
+    }
+
+    setModalVisible(true)
+  }, [organization, type])
+
   
   const fetchData = async (page) => {
     setLoading(true)
     try {
       const offset = (page - 1) * perPage;
-      const organizations = await list(page, offset, searchTerm)
+      const organizations = await list(page, offset, search)
       setData(organizations.data.organizations)
       setTotalRows(organizations.data.total_count)
     } catch (e) {
@@ -74,15 +83,7 @@ export default function Organizations() {
     setPerPage(newPerPage)
     setLoading(false)
   }
-
-  useEffect(() => {
-    if (isInitialRender.current) {
-      isInitialRender.current = false
-      return
-    }
-
-    setModalVisible(true)
-  }, [organization, type])
+  
   const columns = [
     {
       name: 'ID',
@@ -142,9 +143,6 @@ export default function Organizations() {
     },
   ]
 
-  useEffect(() => {
-    fetchData(1) // fetch page 1 of users
-  }, [])
 
   return (
     <>
@@ -202,8 +200,7 @@ export default function Organizations() {
                   placeholder="Cari Organisasi"
                   type="search"
                   name="search"
-                  value={searchTerm}
-                  onChange={handleInputChange}
+                  onChange={(event) => setSearch(event.target.value)}
                 />
               </form>
             </div>

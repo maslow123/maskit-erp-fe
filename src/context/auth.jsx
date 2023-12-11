@@ -69,7 +69,7 @@ export const ProtectRoute = ({ children }) => {
     if (typeof window !== undefined) {
         const currentPageNoAuth = noAuthPage.includes(router.pathname);
         if (loading || (!isAuthenticated && !currentPageNoAuth)) {
-            return <>Loading...</>
+            // return <>Loading...</>
         }
     }
     return children;

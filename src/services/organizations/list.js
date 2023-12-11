@@ -4,8 +4,12 @@ import { headers } from '../headers'
 
 const list = async (page, limit, search) => {
     try {
+        let query = `page=${page}&offset=${limit}`;
+        if (search) {
+            query = `${query}&name=${search}`;
+        }
         const data = await fetch(
-            `${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/organizations?page=${page}&offset=${limit}&name=${search}`,
+            `${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/organizations?${query}`,
             {
                 method: 'GET',
                 ...headers
