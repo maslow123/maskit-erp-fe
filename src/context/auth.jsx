@@ -3,12 +3,13 @@
 import Cookies from 'js-cookie';
 import { createContext, useContext, useEffect, useState } from 'react';
 
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 const AuthContext = createContext({});
 
 export default function AuthProvider({ children }) {
 
+    const pathname = usePathname();
     const router = useRouter();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -28,7 +29,7 @@ export default function AuthProvider({ children }) {
             if (token && userData) {
                 setUser({ ...userData });
 
-                if (['/login', '/register'].includes(router.pathname)) {
+                if (['/login', '/register'].includes(pathname)) {
                     router.push('/dashboard');
                 }
                 return
@@ -61,15 +62,16 @@ export default function AuthProvider({ children }) {
 export const useAuth = () => useContext(AuthContext);
 
 export const ProtectRoute = ({ children }) => {
-    const router = useRouter();
+    const pathname = usePathname();
     const noAuthPage = ['/login', '/register'];
 
     const { isAuthenticated, loading } = useAuth();
 
+
     if (typeof window !== undefined) {
-        const currentPageNoAuth = noAuthPage.includes(router.pathname);
+        const currentPageNoAuth = noAuthPage.includes(pathname);
         if (loading || (!isAuthenticated && !currentPageNoAuth)) {
-            // return <>Loading...</>
+            return <>Loading...</>
         }
     }
     return children;

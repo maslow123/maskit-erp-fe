@@ -1,6 +1,5 @@
 'use client'
 import { SlimLayout } from '@/components/SlimLayout'
-import { useAuth } from '@/context/auth'
 import { EnvelopeIcon, EyeIcon, EyeslashIcon, LockIcon } from '@/icons'
 import { status } from '@/lib/constants'
 import login from '@/services/auth/login'
@@ -11,9 +10,6 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react'
 
 export default function Login() {
-  const router = useRouter();
-  const ctx = useAuth();
-
   const [payload, setPayload] = useState({
     email: 'superadmin@maskit.co.id',
     password: 'superadmin',
@@ -48,7 +44,7 @@ export default function Login() {
         organization_id: "9f963c22-b841-4ccd-a87d-b4d69674e361",
       }));
       setIsLoading(false)
-      router.push('/dashboard');
+      window.location.href = '/dashboard';
     } catch (e) {
       showToast('error', JSON.stringify(e))
     }

@@ -15,7 +15,6 @@ import '@/styles/tailwind.scss'
 import { list } from '@/services/organizations'
 import ModalPopup from '@/components/ModalPopup'
 import ModalForm from './ModalForm'
-import { debounce } from 'lodash'
 export default function Organizations() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [data, setData] = useState([])
