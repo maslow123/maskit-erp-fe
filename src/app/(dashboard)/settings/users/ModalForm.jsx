@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Loading from '@/components/Loading'
 import { useAuth } from '@/context/auth'
 import { getOrganizationList } from '@/services/organizations'
@@ -10,15 +11,27 @@ export default function ModalForm({ data, onClose }) {
 
   const [formData, setFormData] = useState({ ...data })
   const [loading, setLoading] = useState(false)
-  const [organizationOptions, setOrganizationOptions] = useState([])
+  const [selectOptions, setSelectOptions] = useState([])
 
   useEffect(() => {
-    getOrganizationList().then((res) => {
-      setOrganizationOptions(res.data.organizations.map((e) => ({
-        label: e.name,
-        value: e.id,
-      })))
-    }).catch((e) => console.error(e))
+    if (user.level == "Super Admin") {
+      return getOrganizationList().then((res) => {
+        setSelectOptions(res.data.organizations.map((e) => ({
+          label: e.name,
+          value: e.id,
+        })))
+      }).catch((e) => console.error(e))
+    }
+
+    setSelectOptions([
+      {
+        label: "Super Admin",
+        value: "Super Admin",
+      }, {
+        label: "Admin",
+        value: "Admin",
+      },
+    ])
   }, [])
 
   const handlePayload = (key, value) => {
@@ -26,41 +39,46 @@ export default function ModalForm({ data, onClose }) {
   }
 
   const inputs = [
-    user.level == "Super Admin" ? 
-    {
-      label: 'Level Usaha',
-      state: 'level',
-      form: (
-        <select
-          value={formData.level}
-          required
-          type="text"
-          name="level"
-          className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-          placeholder="Pilih Level Usaha"
-          onChange={(e) => handlePayload('level', e.target.value)}
-        >
-          <option value={null}>Pilih Opsi</option>
-          {organizationOptions.map((e, i) => (
-            <option key={i} value={e.value}>{e.label}</option>
-          ))}
-        </select>
-      ),
-    } : {
-      label: 'Nama Usaha',
-      state: 'organization_name',
-      form: (
-        <input
-          value={formData.organization_name}
-          required
-          type="text"
-          name="organization_name"
-          className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-          placeholder="Masukkan Nama Usaha"
-          onChange={(e) => handlePayload('organization_name', e.target.value)}
-        />
-      ),
-    },
+    user.level == "Super Admin" ?
+      {
+        label: 'Nama Usaha',
+        state: 'organization_name',
+        form: (
+          <select
+            value={formData.organization_name}
+            required
+            type="text"
+            name="organization_name"
+            className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            placeholder="Pilih Nama Usaha"
+            onChange={(e) => handlePayload('organization_name', e.target.value)}
+          >
+            <option value={null}>Pilih Opsi</option>
+            {selectOptions.map((e, i) => (
+              <option key={i} value={e.value}>{e.label}</option>
+            ))}
+          </select>
+        ),
+      } : {
+        label: 'Level Pengguna',
+        state: 'level',
+        form: (
+          <select
+            value={formData.level}
+            required
+            type="text"
+            name="level"
+            className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            placeholder="Pilih Level Usaha"
+            onChange={(e) => handlePayload('level', e.target.value)}
+          >
+            <option value={null}>Pilih Opsi</option>
+            {selectOptions.map((e, i) => (
+              <option key={i} value={e.value}>{e.label}</option>
+            ))}
+          </select>
+        ),
+      },
     {
       label: 'Nama Pengguna',
       state: 'name',

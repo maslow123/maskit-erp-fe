@@ -57,6 +57,10 @@ export default function User() {
       name: 'Nama Usaha',
       selector: (row) => row.organization_name,
     } : {
+      name: 'Level Pengguna',
+      selector: (row) => row.level,
+    },
+    {
       name: 'Nama Pengguna',
       selector: (row) => row.name,
     },
