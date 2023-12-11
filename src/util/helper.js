@@ -133,10 +133,14 @@ const logout = (ctx, router) => {
     router.push('/login')
 }
 
-function objectToQueryString(obj) {
+const objectToQueryString = (obj) => {
     return Object.keys(obj)
         .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(obj[key])}`)
         .join('&')
+}
+
+const classNames = (...classes) => {
+    return classes.filter(Boolean).join(' ')
 }
 
 export {
@@ -151,5 +155,6 @@ export {
     getPartOfDay,
     ellipsisText,
     logout,
-    objectToQueryString
+    objectToQueryString,
+    classNames
 }

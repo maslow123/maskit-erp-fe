@@ -31,9 +31,9 @@ export function Sidebar({ onSidebarOpen, sidebarOpen, tab }) {
     },
     {
       name: 'Pembelian',
-      href: '#',
+      href: '/purchase',
       icon: ShoppingCartIcon,
-      current: tab === 'dashboard',
+      current: tab === 'purchase',
     },
     {
       name: 'Persediaan',
