@@ -2,9 +2,9 @@
 
 import { headers } from '../headers'
 
-const create = async (data) => {
+const createUser = async (data) => {
     try {
-        const response = await fetch(`${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/organizations`, {
+        const response = await fetch(`${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/users`, {
             method: 'POST',
             body: JSON.stringify(data),
             ...headers
@@ -17,4 +17,4 @@ const create = async (data) => {
     }
 }
 
-export default create
+export default createUser

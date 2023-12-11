@@ -10,6 +10,7 @@ export const useTable = (tableEndpoint, initialQuery) => {
     const [page, setPage] = useState(1)
     const [error, setError] = useState(1)
     const [query, setQuery] = useState(initialQuery)
+    const [search, onSearch] = useState()
 
     const fetchData = async (query) => {
         setLoading(true)
@@ -42,6 +43,14 @@ export const useTable = (tableEndpoint, initialQuery) => {
 
     useEffect(() => reload(), [])
 
+    useEffect(() => {
+        const getData = setTimeout(() => {
+            setQuery((prevData) => ({ ...prevData, ...search }))
+        }, 500)
+
+        return () => clearTimeout(getData)
+    }, [search])
+
     return {
         data,
         setData,
@@ -57,6 +66,7 @@ export const useTable = (tableEndpoint, initialQuery) => {
         setPage,
         query,
         setQuery,
+        onSearch,
         reload
     }
 }

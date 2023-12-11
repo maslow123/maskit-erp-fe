@@ -1,7 +1,11 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
-import { Sidebar } from '@/components/Sidebar'
+
+import ModalPopup from '@/components/ModalPopup'
 import { Navbar } from '@/components/Navbar'
+import { Sidebar } from '@/components/Sidebar'
+import { useTable } from '@/hooks/use-table'
+import { getOrganizationList } from '@/services/organizations'
+import '@/styles/tailwind.scss'
 import {
   Cog6ToothIcon,
   EyeIcon,
@@ -10,43 +14,42 @@ import {
   PlusCircleIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline'
+import { useEffect, useRef, useState } from 'react'
 import DataTable from 'react-data-table-component'
-import '@/styles/tailwind.scss'
-import { list } from '@/services/organizations'
-import ModalPopup from '@/components/ModalPopup'
 import ModalForm from './ModalForm'
+
 export default function Organizations() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [data, setData] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [totalRows, setTotalRows] = useState(0)
-  const [perPage, setPerPage] = useState(10)
-  const [page, setPage] = useState(1)
   const [modalVisible, setModalVisible] = useState(false)
   const [organization, setOrganization] = useState({})
-  const [type, setType] = useState('')  
-  const [search, setSearch] = useState('');
+  const [type, setType] = useState('')
 
   const isInitialRender = useRef(true)
 
-  useEffect(() => {
-    fetchData(page)
-  }, [])
+  const {
+    data,
+    setData,
+    error,
+    setError,
+    loading,
+    setLoading,
+    totalRows,
+    setTotalRows,
+    rowsPerPage,
+    setRowsPerPage,
+    page,
+    setPage,
+    query,
+    setQuery,
+    onSearch,
+    reload
+  } = useTable(getOrganizationList, {
+    // name: "",
+    // pic_name: "",
+    // business_field: "",
+    // include_deleted: false,
+  })
 
-  
-  useEffect(() => {
-    const getData = setTimeout(() => {
-      fetchData(page)
-    }, 500)
-
-    return () => clearTimeout(getData)
-}, [search])
-
-  useEffect(() => {
-    fetchData(1) // fetch page 1 of users
-  }, [])
-
-  
   useEffect(() => {
     if (isInitialRender.current) {
       isInitialRender.current = false
@@ -56,33 +59,6 @@ export default function Organizations() {
     setModalVisible(true)
   }, [organization, type])
 
-  
-  const fetchData = async (page) => {
-    setLoading(true)
-    try {
-      const offset = (page - 1) * perPage;
-      const organizations = await list(page, offset, search)
-      setData(organizations.data.organizations)
-      setTotalRows(organizations.data.total_count)
-    } catch (e) {
-      console.error(e)
-    }
-    setLoading(false)
-  }
-
-  const handlePageChange = (page) => {
-    setPage(page)
-    fetchData(page)
-  }
-
-  const handlePerRowsChange = async (newPerPage, page) => {
-    setLoading(true)
-
-    setPage(page)
-    setPerPage(newPerPage)
-    setLoading(false)
-  }
-  
   const columns = [
     {
       name: 'ID',
@@ -142,7 +118,6 @@ export default function Organizations() {
     },
   ]
 
-
   return (
     <>
       <div>
@@ -178,7 +153,7 @@ export default function Organizations() {
               <div className="sm:flex-auto">
                 <button
                   type="button"
-                  className="block flex items-center justify-between gap-1 rounded-md bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
+                  className="flex items-center justify-between gap-1 rounded-md bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
                   onClick={() => {
                     setOrganization({})
                     setType('add')
@@ -199,7 +174,9 @@ export default function Organizations() {
                   placeholder="Cari Organisasi"
                   type="search"
                   name="search"
-                  onChange={(event) => setSearch(event.target.value)}
+                  onChange={(event) => {
+                    onSearch({ "name": event.target.value })
+                  }}
                 />
               </form>
             </div>
@@ -207,18 +184,12 @@ export default function Organizations() {
               <ModalPopup
                 height={type !== 'delete' ? 800 : 300}
                 visible={modalVisible}
-                onClose={(currentModalVisible) => {
-                  setModalVisible(currentModalVisible)
-                  fetchData(page)
-                }}
+                onClose={(currentModalVisible) => reload()}
               >
                 <ModalForm
                   type={type}
                   data={organization}
-                  onClose={(currentModalVisible) => {
-                    setModalVisible(currentModalVisible)
-                    fetchData(page)
-                  }}
+                  onClose={(currentModalVisible) => reload()}
                 />
               </ModalPopup>
               <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -226,13 +197,16 @@ export default function Organizations() {
                   <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
                     <DataTable
                       columns={columns}
-                      data={data || []}
+                      data={data.organizations || []}
                       progressPending={loading}
                       pagination
                       paginationServer
                       paginationTotalRows={totalRows}
-                      onChangeRowsPerPage={handlePerRowsChange}
-                      onChangePage={handlePageChange}
+                      onChangeRowsPerPage={(newPerPage, page) => {
+                        setPage(page)
+                        setRowsPerPage(newPerPage)
+                      }}
+                      onChangePage={(page, totalRows) => setPage(page)}
                     />
                   </div>
                 </div>

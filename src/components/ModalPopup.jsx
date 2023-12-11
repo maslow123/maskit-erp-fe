@@ -1,4 +1,3 @@
-import React from 'react';
 import Rodal from 'rodal';
 
 // include styles
@@ -7,7 +6,7 @@ import 'rodal/lib/rodal.css';
 
 export default function ModalPopup({ visible, onClose, children, width = 700, height = 550, title  }) {
     return (
-        <Rodal  visible={visible} onClose={() => onClose(false)} width={width} height={height}>
+        <Rodal visible={visible} onClose={() => onClose(false)} width={width} height={height}>
             <div className='header'>
                 {title}
             </div>

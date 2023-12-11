@@ -21,7 +21,7 @@ export default function Settings() {
     {
       title: 'Manajemen Pengguna',
       image: usersImage,
-      href: '/settings/user'
+      href: '/settings/users'
     },
     {
       title: 'xxxxx',

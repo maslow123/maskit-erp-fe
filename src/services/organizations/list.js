@@ -1,30 +1,19 @@
 'use client';
 
-import { headers } from '../headers'
+import { headers } from '../headers';
 
-const list = async (page, limit, search) => {
+const getOrganizationList = async (query) => {
     try {
-        let query = `page=${page}&offset=${limit}`;
-        if (search) {
-            query = `${query}&name=${search}`;
-        }
-        const data = await fetch(
-            `${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/organizations?${query}`,
-            {
-                method: 'GET',
-                ...headers
-            },
-        )
+        const data = await fetch(`${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/organizations?${new URLSearchParams(query)}`, {
+            method: 'GET',
+            ...headers
+        },)
 
-        const json = await data.json()
-        console.log({ json })
-        return json
-
-        // return mock
+        return await data.json()
     } catch (e) {
         console.log(e)
         return e
     }
 }
 
-export default list
+export default getOrganizationList
