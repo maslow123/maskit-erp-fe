@@ -24,9 +24,9 @@ export default function Settings() {
       href: '/settings/users'
     },
     {
-      title: 'xxxxx',
+      title: 'Identitas Organisasi',
       image: townImage,
-      href: '#'
+      href: '/settings/profile'
     },
     {
       title: 'xxxxx',
