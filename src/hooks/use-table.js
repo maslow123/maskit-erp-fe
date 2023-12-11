@@ -12,6 +12,7 @@ export const useTable = (tableEndpoint, initialQuery) => {
     const [query, setQuery] = useState(initialQuery)
     const [search, onSearch] = useState()
 
+    const offset = (page - 1) * rowsPerPage;
     const fetchData = async (query) => {
         setLoading(true)
         try {
@@ -26,8 +27,9 @@ export const useTable = (tableEndpoint, initialQuery) => {
     }
 
     const reload = useCallback(() => {
+
         fetchData({
-            offset: page,
+            offset: offset,
             limit: rowsPerPage,
             ...query
         })
@@ -35,7 +37,7 @@ export const useTable = (tableEndpoint, initialQuery) => {
 
     useEffect(() => {
         fetchData({
-            offset: page,
+            offset: offset,
             limit: rowsPerPage,
             ...query
         })

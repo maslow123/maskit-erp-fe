@@ -33,7 +33,7 @@ export default function Page() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [form, setForm] = useState()
-
+  const [type, setType] = useState()
   const {
     data,
     setData,
@@ -49,11 +49,14 @@ export default function Page() {
     setPage,
     moreQuery,
     setMoreQuery,
+    onSearch,
     reload,
   } = useTable(getSupplierList, {
-    // name: "",
-    // organization_id: user.organization_id,
-    // include_deleted: false,
+    name: '',
+    pic_name: '',
+    phone_number: '',
+    email: '',
+    address: '',
   })
 
   const columns = [
@@ -63,7 +66,7 @@ export default function Page() {
     },
     {
       name: 'Nama Supplier',
-      selector: (row) => row.name
+      selector: (row) => row.name,
     },
     {
       name: 'Nama PIC',
@@ -86,6 +89,7 @@ export default function Page() {
       selector: (row) => (
         <div className="flex flex-row flex-wrap justify-between gap-1">
           <button
+            // onClick={() => setType('edit')}
             type="button"
             class="inline-flex items-center gap-x-0.5 rounded-md bg-[#FBBC04] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm hover:bg-[#FBBC04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FBBC04]"
           >
@@ -93,6 +97,7 @@ export default function Page() {
             Ubah
           </button>
           <button
+            onClick={() => setType('delete')}
             type="button"
             class="hover:bg-[#F24822]-500 focus-visible:outline-[#F24822]-600 inline-flex items-center gap-x-0.5 rounded-md bg-[#F24822] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
@@ -142,12 +147,13 @@ export default function Page() {
                   className="flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
                   onClick={() => {
                     setForm({
-                      id: null,
-                      level: null,
-                      name: null,
-                      email: null,
-                      password: null,
+                      name: '',
+                      pic_name: '',
+                      phone_number: '',
+                      email: '',
+                      address: '',
                     })
+                    setType('add')
                   }}
                 >
                   <PlusCircleIcon className="h-5 w-5 flex-shrink-0" />
@@ -215,7 +221,7 @@ export default function Page() {
                               Unggah Template
                             </a>
                           )}
-                        </Menu.Item>                        
+                        </Menu.Item>
                       </div>
                     </Menu.Items>
                   </Transition>
@@ -232,19 +238,30 @@ export default function Page() {
                   placeholder="Cari Supplier"
                   type="search"
                   name="search"
+                  onChange={(event) => {
+                    onSearch({ name: event.target.value })
+                  }}
                 />
               </form>
             </div>
             <div className="mt-8 flow-root">
               <ModalPopup
-                height={450}
+                height={600}
                 visible={form != undefined}
-                onClose={(currentModalVisible) => reload()}
+                onClose={(currentModalVisible) => {
+                  if (currentModalVisible) return
+                  setForm(undefined)
+                  reload()
+                }}
               >
                 {form && (
                   <ModalForm
                     data={form}
-                    onClose={(currentModalVisible) => reload()}
+                    onClose={(currentModalVisible) => {
+                      if (currentModalVisible) return
+                      setForm(undefined)
+                      reload()
+                    }}
                   />
                 )}
               </ModalPopup>
@@ -253,7 +270,7 @@ export default function Page() {
                   <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
                     <DataTable
                       columns={columns}
-                      data={data?.users}
+                      data={data?.suppliers || []}
                       progressPending={loading}
                       pagination
                       paginationServer
