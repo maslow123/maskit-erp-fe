@@ -3,8 +3,7 @@ import { createSupplier, deleteSupplier, updateSupplier } from '@/services/suppl
 import { showToast } from '@/util/helper'
 import React, { useEffect, useState } from 'react'
 
-export default function ModalForm({ data, onClose, type }) {
-  console.log({ data })
+export default function ModalForm({ data, onClose }) {
   const [formData, setFormData] = useState({ ...data })
   const [loading, setLoading] = useState(false)
 
@@ -13,41 +12,41 @@ export default function ModalForm({ data, onClose, type }) {
   }
 
   const getData = () => {
-    let data = {
+    let modalData = {
       title: formData?.['title'],
       bgButton: formData?.['bgBut'],
       disabled: false,
       action: () => {},
     }
 
-    switch (type) {
+    switch (data.type) {
       case 'view':
-        data.title = 'Data Organisasi'
-        data.bgButton = 'rounded bg-[#5A5252] px-3 py-3 text-white'
-        data.disabled = true
-        data.action = () => {}
+        modalData.title = 'Data Organisasi'
+        modalData.bgButton = 'rounded bg-[#5A5252] px-3 py-3 text-white'
+        modalData.disabled = true
+        modalData.action = () => {}
 
-        return data
+        return modalData
       case 'add':
-        data.title = 'Tambah Organisasi'
-        data.bgButton = 'rounded bg-[#5669CC] px-3 py-3 text-white'
-        data.disabled = false
-        data.action = (e) => {
+        modalData.title = 'Tambah Organisasi'
+        modalData.bgButton = 'rounded bg-[#5669CC] px-3 py-3 text-white'
+        modalData.disabled = false
+        modalData.action = (e) => {
           addSupplier(e)
         }
-        return data
+        return modalData
       case 'edit':
-        data.title = 'Ubah Organisasi'
-        data.bgButton = 'rounded bg-[#FBBC04] px-3 py-3 text-white'
-        data.disabled = false
-        data.action = (e) => {
+        modalData.title = 'Ubah Organisasi'
+        modalData.bgButton = 'rounded bg-[#FBBC04] px-3 py-3 text-white'
+        modalData.disabled = false
+        modalData.action = (e) => {
           console.log('masuk gaggg')
           editSupplier(e)
         }
 
-        return data
+        return modalData
       case 'delete':
-        return data
+        return modalData
     }
   }
 
@@ -60,7 +59,7 @@ export default function ModalForm({ data, onClose, type }) {
       form: (
         <input
           value={
-            type !== 'add'
+            data?.type !== 'add'
               ? formData?.['id'] || data?.['id']
               : formData?.['id'] || ''
           }
@@ -80,7 +79,7 @@ export default function ModalForm({ data, onClose, type }) {
       form: (
         <input
           value={
-            type !== 'add'
+            data?.type !== 'add'
               ? formData?.['name'] || data?.['name']
               : formData?.['name'] || ''
           }
@@ -99,7 +98,7 @@ export default function ModalForm({ data, onClose, type }) {
       form: (
         <input
           value={
-            type !== 'add'
+            data?.type !== 'add'
               ? formData?.['pic_name'] || data?.['pic_name']
               : formData?.['pic_name'] || ''
           }
@@ -118,7 +117,7 @@ export default function ModalForm({ data, onClose, type }) {
       form: (
         <input
           value={
-            type !== 'add'
+            data?.type !== 'add'
               ? formData?.['phone_number'] || data?.['phone_number']
               : formData?.['phone_number'] || ''
           }
@@ -137,7 +136,7 @@ export default function ModalForm({ data, onClose, type }) {
       form: (
         <input
           value={
-            type !== 'add'
+            data?.type !== 'add'
               ? formData?.['email'] || data?.['email']
               : formData?.['email'] || ''
           }
@@ -156,7 +155,7 @@ export default function ModalForm({ data, onClose, type }) {
       form: (
         <textarea
           value={
-            type !== 'add'
+            data?.type !== 'add'
               ? formData?.['address'] || data?.['address']
               : formData?.['address'] || ''
           }
@@ -230,7 +229,7 @@ export default function ModalForm({ data, onClose, type }) {
   }
   return (
     <React.Fragment>
-      {type === 'delete' 
+      {data.type === 'delete' 
       ? (
         <div className="py-5 flex-1 text-center">
           <span>Anda yakin ingin menghapus data ini?</span>
