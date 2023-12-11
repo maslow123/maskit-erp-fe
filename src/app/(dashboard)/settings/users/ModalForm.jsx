@@ -1,9 +1,10 @@
-import { create, list } from '@/services/organizations'
+import Loading from '@/components/Loading'
+import { getOrganizationList } from '@/services/organizations'
+import { createUser } from '@/services/user'
 import { showToast } from '@/util/helper'
 import { useEffect, useState } from 'react'
 
-export default function ModalForm({ data, onClose, type }) {
-
+export default function ModalForm({ data, onClose }) {
   const [formData, setFormData] = useState({ ...data })
   const [loading, setLoading] = useState(false)
   const [usahaOptions, setUsahaOptions] = useState([])
@@ -13,7 +14,7 @@ export default function ModalForm({ data, onClose, type }) {
   }
 
   useEffect(() => {
-    list('').then((res) => {
+    getOrganizationList().then((res) => {
       setUsahaOptions(res.data.organizations.map((e) => ({
         label: e.name,
         value: e.id,
@@ -27,7 +28,7 @@ export default function ModalForm({ data, onClose, type }) {
       state: 'id',
       form: (
         <input
-          value={data['id']}
+          value={formData.id}
           required
           type="text"
           name="id"
@@ -42,14 +43,15 @@ export default function ModalForm({ data, onClose, type }) {
       state: 'level',
       form: (
         <select
-          value={data['level']}
+          value={formData.level}
           required
           type="text"
-          name="text"
+          name="level"
           className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           placeholder="Pilih Nama Usaha"
           onChange={(e) => handlePayload('level', e.target.value)}
         >
+          <option value={null}>Pilih Opsi</option>
           {usahaOptions.map((e, i) => (
             <option key={i} value={e.value}>{e.label}</option>
           ))}
@@ -61,7 +63,7 @@ export default function ModalForm({ data, onClose, type }) {
       state: 'name',
       form: (
         <input
-          value={data['name']}
+          value={formData.name}
           required
           type="text"
           name="name"
@@ -76,7 +78,7 @@ export default function ModalForm({ data, onClose, type }) {
       state: 'email',
       form: (
         <input
-          value={data['email']}
+          value={formData.email}
           required
           type="text"
           name="email"
@@ -91,7 +93,7 @@ export default function ModalForm({ data, onClose, type }) {
       state: 'password',
       form: (
         <input
-          value={data['password']}
+          value={formData.password}
           required
           type="password"
           name="password"
@@ -103,26 +105,25 @@ export default function ModalForm({ data, onClose, type }) {
     },
   ]
 
-
   const onSubmit = async (e) => {
     e.preventDefault()
 
-    console.log({ formData })
     setLoading(true)
     try {
-      const resp = await create(formData)
-      if (resp.status === 201) {
-        showToast('success', resp.message)
-        setLoading(false)
-        return onClose(false)
-      } else {
-        throw new Error(JSON.stringify(resp))
+      const resp = await createUser(formData)
+      if (resp.status !== 200) {
+        throw new Error(resp.message)
       }
-    } catch (e) {
-      console.error(e)
+
+      showToast('success', resp.message)
+      return onClose(false)
+    } catch (err) {
+      showToast('error', err?.message || "Something Wrong")
+    } finally {
       setLoading(false)
     }
   }
+  
   return (
     <form onSubmit={onSubmit} className="space-y-10">
       <div className="mb-5 text-center">
@@ -142,10 +143,10 @@ export default function ModalForm({ data, onClose, type }) {
       <div className="my-5 flex flex-row justify-end gap-3">
         <button
           type="submit"
-          disabled={loading}
-          className="flex items-center justify-between gap-1 rounded-md bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
+          disabled={loading || !Object.values(formData).every(e => e)}
+          className="flex items-center justify-between gap-1 rounded-md bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252] disabled:cursor-not-allowed disabled:bg-blue-theme/50"
         >
-          <span>Simpan</span>
+          {loading ? <Loading /> : <span>Simpan</span>}
         </button>
         <button
           type="button"
@@ -154,7 +155,7 @@ export default function ModalForm({ data, onClose, type }) {
             return onClose(false)
           }}
         >
-          <span>Batal</span>
+          {loading ? <Loading /> : <span>Batal</span>}
         </button>
       </div>
     </form>

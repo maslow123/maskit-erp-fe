@@ -140,16 +140,8 @@ function objectToQueryString(obj) {
 }
 
 export {
-    getToken,
+    checkEmailFormat, ellipsisText, formatDate, formatMoney, getPartOfDay, getToken,
     getTotalTransaction,
-    hasError,
-    checkEmailFormat,
-    validate,
-    formatMoney,
-    showToast,
-    formatDate,
-    getPartOfDay,
-    ellipsisText,
-    logout,
-    objectToQueryString
+    hasError, logout,
+    objectToQueryString, showToast, validate
 }

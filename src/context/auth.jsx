@@ -36,7 +36,7 @@ export default function AuthProvider({ children }) {
             }
             setLoading(false);
 
-            if (!token) {
+            if (!token && userData) {
                 router.push('/login');
                 return;
             }

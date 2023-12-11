@@ -4,8 +4,10 @@ import ModalPopup from '@/components/ModalPopup'
 import { Navbar } from '@/components/Navbar'
 import { Sidebar } from '@/components/Sidebar'
 import { useAuth } from '@/context/auth'
-import { getUserList } from '@/services/user'
+import { useTable } from '@/hooks/use-table'
+import { deleteUser, getUserList } from '@/services/user'
 import '@/styles/tailwind.scss'
+import { debounce } from '@/util/helper'
 import {
   Cog6ToothIcon,
   MagnifyingGlassIcon,
@@ -16,13 +18,13 @@ import {
 import { useState } from 'react'
 import DataTable from 'react-data-table-component'
 import ModalForm from './ModalForm'
-import { useTable } from '@/hooks/use-table'
 
 export default function User() {
   const { user } = useAuth();
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [form, setForm] = useState()
+  const [deleteId, setDeleteId] = useState()
 
   const {
     data,
@@ -37,8 +39,9 @@ export default function User() {
     setRowsPerPage,
     page,
     setPage,
-    moreQuery,
-    setMoreQuery,
+    query,
+    setQuery,
+    onSearch,
     reload
   } = useTable(getUserList, {
     // name: "",
@@ -67,6 +70,7 @@ export default function User() {
       selector: (row) => (
         <div className="flex flex-row flex-wrap justify-between gap-1">
           <button
+            onClick={() => setForm({ ...row })}
             type="button"
             class="inline-flex items-center gap-x-0.5 rounded-md bg-[#FBBC04] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm hover:bg-[#FBBC04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FBBC04]"
           >
@@ -74,6 +78,10 @@ export default function User() {
             Ubah
           </button>
           <button
+            onClick={() => {
+              setForm({ ...row })
+              setType('delete')
+            }}
             type="button"
             class="hover:bg-[#F24822]-500 focus-visible:outline-[#F24822]-600 inline-flex items-center gap-x-0.5 rounded-md bg-[#F24822] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
@@ -84,6 +92,23 @@ export default function User() {
       ),
     },
   ]
+
+  const deleteData = async (id) => {
+    setLoading(true)
+    try {
+      const resp = await deleteUser(id)
+      if (resp.status !== 200) {
+        throw new Error(resp.message)
+      }
+
+      showToast('success', resp.message)
+      return onClose(false)
+    } catch (err) {
+      showToast('error', err?.message || "Something Wrong")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <>
@@ -100,7 +125,7 @@ export default function User() {
             { name: 'Pengaturan', href: '/settings', current: false },
             {
               name: 'Manajemen Pengguna',
-              href: '/settings/user',
+              href: '/settings/users',
               current: true,
             },
           ]}
@@ -146,6 +171,9 @@ export default function User() {
                   placeholder="Cari Organisasi"
                   type="search"
                   name="search"
+                  onChange={(event) => {
+                    onSearch({ "name": event.target.value })
+                  }}
                 />
               </form>
             </div>
@@ -153,11 +181,19 @@ export default function User() {
               <ModalPopup
                 height={450}
                 visible={form != undefined}
-                onClose={(currentModalVisible) => reload()}
+                onClose={(currentModalVisible) => {
+                  if (currentModalVisible) return
+                  setForm(undefined)
+                  reload()
+                }}
               >
                 {form && <ModalForm
                   data={form}
-                  onClose={(currentModalVisible) => reload()}
+                  onClose={(currentModalVisible) => {
+                    if (currentModalVisible) return
+                    setForm(undefined)
+                    reload()
+                  }}
                 />}
               </ModalPopup>
               <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -165,7 +201,7 @@ export default function User() {
                   <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
                     <DataTable
                       columns={columns}
-                      data={data?.users}
+                      data={data?.users || []}
                       progressPending={loading}
                       pagination
                       paginationServer
@@ -184,6 +220,33 @@ export default function User() {
           </div>
         </Navbar>
       </div>
+
+      <ModalPopup
+        height={450}
+        visible={deleteId}
+        onClose={(currentModalVisible) => setDeleteId(undefined)}
+      >
+        <div className="py-5 flex-1 text-center">
+          <span>Anda yakin ingin menghapus data ini?</span>
+          <div className="mt-5 flex flex-row justify-end gap-3">
+            <button
+              onClick={() => deleteData(deleteId)}
+              type="button"
+              disabled={loading}
+              className="flex items-center justify-between gap-1 rounded-md bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
+            >
+              <span>Delete</span>
+            </button>
+            <button
+              type="button"
+              className="flex items-center justify-between gap-1 rounded-md bg-red px-3 py-2 text-center text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
+              onClick={() => setDeleteId(undefined)}
+            >
+              <span>Batal</span>
+            </button>
+          </div>
+        </div>
+      </ModalPopup>
     </>
   )
 }
