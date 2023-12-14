@@ -7,7 +7,7 @@ const updateUser = async (data, userId) => {
         const response = await fetch(`${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/users/${userId}`, {
             method: 'PUT',
             body: JSON.stringify(data),
-            ...headers
+            ...headers()
         })
 
         return await response.json()

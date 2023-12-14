@@ -2,9 +2,9 @@
 
 import { headers } from '../headers'
 
-const getUserList = async (query) => {
+const getContractList = async (query) => {
     try {
-        const data = await fetch(`${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/users?${new URLSearchParams(query)}`, {
+        const data = await fetch(`${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/contracts?${new URLSearchParams(query)}`, {
             method: 'GET',
             ...headers()
         })
@@ -16,4 +16,4 @@ const getUserList = async (query) => {
     }
 }
 
-export default getUserList
+export default getContractList

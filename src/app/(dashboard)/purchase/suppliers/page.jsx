@@ -20,16 +20,17 @@ import {
   TrashIcon,
   UserPlusIcon,
 } from '@heroicons/react/24/outline'
-import { Fragment, useState } from 'react'
+import { Fragment, useRef, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import ModalForm from './ModalForm'
 import { useTable } from '@/hooks/use-table'
 import { Menu, Transition } from '@headlessui/react'
 import { classNames, showToast } from '@/util/helper'
-import { deleteBatchSupplier, getSupplierList } from '@/services/suppliers'
+import { batchInsertSupplier, deleteBatchSupplier, getSupplierList, getTemplate } from '@/services/suppliers'
 
 export default function Page() {
   const { user } = useAuth()
+  const hiddenFileInput = useRef(null)
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [form, setForm] = useState()
@@ -171,6 +172,29 @@ export default function Page() {
     }
   }
 
+  const download = async () => {
+    await getTemplate()
+  }
+
+  const upload = async (e) => {
+    const fileUploaded = e.target.files[0]
+    console.log({ fileUploaded })
+    
+    const fd = new FormData();
+    fd.append("file", fileUploaded);
+
+    try {
+      setLoading(true)
+      const resp = await batchInsertSupplier(fd)
+      console.log({ resp })
+    } catch(e) {
+      console.error(e)
+      showToast('error', JSON.stringify(e))
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <>
       <div>
@@ -247,7 +271,7 @@ export default function Page() {
                         <Menu.Item>
                           {({ active }) => (
                             <a
-                              href="#"
+                              onClick={download}
                               className={classNames(
                                 active
                                   ? 'bg-gray-100 text-gray-900'
@@ -268,7 +292,7 @@ export default function Page() {
                         <Menu.Item>
                           {({ active }) => (
                             <a
-                              href="#"
+                              onClick={() => hiddenFileInput.current.click()}
                               className={classNames(
                                 active
                                   ? 'bg-gray-100 text-gray-900'
@@ -282,7 +306,7 @@ export default function Page() {
                               />
                               Unggah Template
                             </a>
-                          )}
+                          )}                          
                         </Menu.Item>
                       </div>
                     </Menu.Items>
@@ -290,6 +314,8 @@ export default function Page() {
                 </Menu>
               </div>
               <form className="relative flex flex-1" action="#" method="GET">
+                
+                <input className="hidden" type="file" ref={hiddenFileInput} onChange={upload}/>
                 <MagnifyingGlassIcon
                   className="pointer-events-none absolute inset-y-0 left-0 ml-2 h-full w-5 text-gray-400"
                   aria-hidden="true"

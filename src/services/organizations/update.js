@@ -10,7 +10,7 @@ const update = async (data, organizationID) => {
             {
                 method: 'PUT',
                 body: JSON.stringify(data),
-                ...headers
+                ...headers()
             },
         )
 

@@ -2,13 +2,12 @@
 
 import { headers } from '../headers'
 
-const updateSupplier = async (data, supplierID) => {
+const deleteContract = async (contractID) => {
     try {
         const response = await fetch(
-            `${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/suppliers/${supplierID}`,
+            `${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/contracts/${contractID}`,
             {
-                method: 'PUT',
-                body: JSON.stringify(data),
+                method: 'DELETE',
                 ...headers()
             },
         )
@@ -24,4 +23,4 @@ const updateSupplier = async (data, supplierID) => {
     }
 }
 
-export default updateSupplier
+export default deleteContract

@@ -8,7 +8,7 @@ const deleteSupplier = async (supplierID) => {
             `${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/suppliers/${supplierID}`,
             {
                 method: 'DELETE',
-                ...headers
+                ...headers()
             },
         )
 

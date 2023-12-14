@@ -93,7 +93,7 @@ export default function ModalForm({ data, onClose }) {
       ),
     },
     {
-      label: 'Nama Supplier',
+      label: 'Nama PIC',
       state: 'name',
       form: (
         <input

@@ -6,7 +6,7 @@ const deleteUser = async (id) => {
     try {
         const response = await fetch(`${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/users/${id}`, {
             method: 'DELETE',
-            ...headers
+            ...headers()
         })
 
         return await response.json()

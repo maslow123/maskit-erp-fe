@@ -8,7 +8,7 @@ const deleteOrganization = async (organizationID) => {
             `${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/organizations/${organizationID}`,
             {
                 method: 'DELETE',
-                ...headers
+                ...headers()
             },
         )
 

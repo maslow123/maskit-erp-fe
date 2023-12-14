@@ -22,7 +22,7 @@ export default function Purchase() {
     {
       title: 'Manajemen Kontrak',
       image: contractImage,
-      href: '/purchase/contract'
+      href: '/purchase/contracts'
     },
     {
       title: 'Perencanaan Pembelian',

@@ -6,7 +6,7 @@ const getOrganizationList = async (query) => {
     try {
         const data = await fetch(`${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/organizations?${new URLSearchParams(query)}`, {
             method: 'GET',
-            ...headers
+            ...headers()
         },)
 
         return await data.json()

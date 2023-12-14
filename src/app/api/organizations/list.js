@@ -4,7 +4,7 @@ import { headers } from "../headers"
 export default async function handler(req, res) {
     try {
         const data = await fetch(`${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/organizations`, {
-            ...headers,
+            ...headers(),
         })
 
         console.log({ data })

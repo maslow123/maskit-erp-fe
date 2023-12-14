@@ -2,14 +2,17 @@
 
 import { headers } from '../headers'
 
-const updateSupplier = async (data, supplierID) => {
+const updateContract = async (data, contractID) => {
     try {
         const response = await fetch(
-            `${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/suppliers/${supplierID}`,
+            `${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/contracts/${contractID}`,
             {
                 method: 'PUT',
-                body: JSON.stringify(data),
-                ...headers()
+                body: data,
+                headers: {
+                    ...headers('form-data').headers,
+                    Accept: 'application/json',
+                }
             },
         )
 
@@ -24,4 +27,4 @@ const updateSupplier = async (data, supplierID) => {
     }
 }
 
-export default updateSupplier
+export default updateContract

@@ -12,7 +12,7 @@ const deleteBatchSupplier = async (supplierIds) => {
             {
                 method: 'DELETE',
                 body: JSON.stringify(payload),
-                ...headers
+                ...headers()
             },
         )
 

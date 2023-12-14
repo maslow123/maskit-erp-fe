@@ -143,6 +143,13 @@ const classNames = (...classes) => {
     return classes.filter(Boolean).join(' ')
 }
 
+const formatCommonDate = (timestamp) => {
+    const date = new Date(timestamp);
+    const formattedDate = date.toISOString().split('T')[0];
+
+    return formattedDate
+}
+
 export {
     getToken,
     getTotalTransaction,
@@ -156,5 +163,6 @@ export {
     ellipsisText,
     logout,
     objectToQueryString,
-    classNames
+    classNames,
+    formatCommonDate
 }

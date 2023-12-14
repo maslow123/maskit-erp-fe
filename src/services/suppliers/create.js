@@ -7,7 +7,7 @@ const createSupplier = async (data) => {
         const response = await fetch(`${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/suppliers`, {
             method: 'POST',
             body: JSON.stringify(data),
-            ...headers
+            ...headers()
         })
 
         return await response.json()
