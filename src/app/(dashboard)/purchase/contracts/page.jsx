@@ -1,10 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client'
-import ModalPopup from '@/components/ModalPopup'
-import { Navbar } from '@/components/Navbar'
-import { Sidebar } from '@/components/Sidebar'
-import { useAuth } from '@/context/auth'
 import '@/styles/tailwind.scss'
+
+import ModalPopup from '@/components/ModalPopup'
+import { useAuth } from '@/context/auth'
+import { NavbarContext } from '@/context/navbar'
+import { useTable } from '@/hooks/use-table'
+import { downloadContract, getContractList } from '@/services/contracts'
+import { getSupplierList } from '@/services/suppliers'
+import { ArrowUpOnSquareIcon } from '@heroicons/react/20/solid'
 import {
   EyeIcon,
   MagnifyingGlassIcon,
@@ -13,17 +17,31 @@ import {
   ShoppingCartIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import ModalForm from './ModalForm'
-import { useTable } from '@/hooks/use-table'
-import { showToast } from '@/util/helper'
-import { getSupplierList } from '@/services/suppliers'
-import { downloadContract, getContractList } from '@/services/contracts'
-import { ArrowUpOnSquareIcon } from '@heroicons/react/20/solid'
 
 export default function Page() {
   const { user } = useAuth()
+
+  const { _, setNavbar } = useContext(NavbarContext)
+
+  setNavbar({
+    breadcrumbs: [
+      { name: 'Pembelian', href: '/purchase', current: false },
+      {
+        name: 'Manajemen Kontrak',
+        href: '/purchase/contracts',
+        current: true,
+      },
+    ],
+    breadcrumbIcon: (
+      <ShoppingCartIcon
+        className="h-5 w-5 flex-shrink-0"
+        aria-hidden="true"
+      />
+    )
+  })
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [form, setForm] = useState()
@@ -141,123 +159,91 @@ export default function Page() {
   ]
 
   return (
-    <>
-      <div>
-        <Sidebar
-          tab="purchase"
-          sidebarOpen={sidebarOpen}
-          onSidebarOpen={(sidebarIsOpen) => {
-            setSidebarOpen(sidebarIsOpen)
-          }}
-        />
-        <Navbar
-          breadcrumbs={[
-            { name: 'Pembelian', href: '/purchase', current: false },
-            {
-              name: 'Manajemen Kontrak',
-              href: '/purchase/contracts',
-              current: true,
-            },
-          ]}
-          breadcrumbIcon={
-            <ShoppingCartIcon
-              className="h-5 w-5 flex-shrink-0"
-              aria-hidden="true"
-            />
-          }
-          sidebarOpen={sidebarOpen}
-          onSidebarOpen={(sidebarIsOpen) => {
-            setSidebarOpen(sidebarIsOpen)
+    <div className="px-4 sm:px-6 lg:px-8">
+    <div className="sm:flex">
+      <div className="flex flex-row gap-2 sm:flex-auto">
+        <button
+          type="button"
+          className="flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
+          onClick={() => {
+            setForm({
+              supplier_id: '',
+              terms_of_payment: '',
+              down_payment: '',
+              start_date: '',
+              end_date: '',
+              reminder: '',
+              notes: '',
+              attachment: null,
+              type: 'add',
+            })
           }}
         >
-          <div className="px-4 sm:px-6 lg:px-8">
-            <div className="sm:flex">
-              <div className="flex flex-row gap-2 sm:flex-auto">
-                <button
-                  type="button"
-                  className="flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
-                  onClick={() => {
-                    setForm({
-                      supplier_id: '',
-                      terms_of_payment: '',
-                      down_payment: '',
-                      start_date: '',
-                      end_date: '',
-                      reminder: '',
-                      notes: '',
-                      attachment: null,
-                      type: 'add',
-                    })
-                  }}
-                >
-                  <PlusCircleIcon className="h-5 w-5 flex-shrink-0" />
-                  <span>Buat Kontrak</span>
-                </button>
-              </div>
-              <form className="relative flex flex-1" action="#" method="GET">
-                <MagnifyingGlassIcon
-                  className="pointer-events-none absolute inset-y-0 left-0 ml-2 h-full w-5 text-gray-400"
-                  aria-hidden="true"
-                />
-                <input
-                  id="search-field"
-                  className="border-1 block h-full w-full rounded border-[#D9D9D9] py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-                  placeholder="Cari Kontrak"
-                  type="search"
-                  name="search"
-                  onChange={(event) => {
-                    onSearch({ name: event.target.value })
-                  }}
-                />
-              </form>
-            </div>
-            <div className="mt-8 flow-root">
-              <ModalPopup
-                height={form?.type === 'delete' ? 200 : 800}
-                visible={form != undefined}
-                onClose={(currentModalVisible) => {
-                  if (currentModalVisible) return
-                  setForm(undefined)
-                  reload()
-                }}
-              >
-                {form && (
-                  <ModalForm
-                    suppliers={supplierList}
-                    data={form}
-                    onClose={(currentModalVisible) => {
-                      if (currentModalVisible) return
-                      setForm(undefined)
-                      reload()
-                    }}
-                    download={download}
-                  />
-                )}
-              </ModalPopup>
-              <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                  <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-                    <DataTable
-                      columns={columns}
-                      data={data?.contracts || []}
-                      progressPending={loading}
-                      pagination
-                      paginationServer
-                      paginationTotalRows={totalRows}
-                      onChangeRowsPerPage={(rowsPerPage, page) => {
-                        setRowsPerPage(rowsPerPage)
-                      }}
-                      onChangePage={(page) => {
-                        setPage(page)
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Navbar>
+          <PlusCircleIcon className="h-5 w-5 flex-shrink-0" />
+          <span>Buat Kontrak</span>
+        </button>
       </div>
-    </>
+      <form className="relative flex flex-1" action="#" method="GET">
+        <MagnifyingGlassIcon
+          className="pointer-events-none absolute inset-y-0 left-0 ml-2 h-full w-5 text-gray-400"
+          aria-hidden="true"
+        />
+        <input
+          id="search-field"
+          className="border-1 block h-full w-full rounded border-[#D9D9D9] py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
+          placeholder="Cari Kontrak"
+          type="search"
+          name="search"
+          onChange={(event) => {
+            onSearch({ name: event.target.value })
+          }}
+        />
+      </form>
+    </div>
+    <div className="mt-8 flow-root">
+      <ModalPopup
+        height={form?.type === 'delete' ? 200 : 800}
+        visible={form != undefined}
+        onClose={(currentModalVisible) => {
+          if (currentModalVisible) return
+          setForm(undefined)
+          reload()
+        }}
+      >
+        {form && (
+          <ModalForm
+            suppliers={supplierList}
+            data={form}
+            onClose={(currentModalVisible) => {
+              if (currentModalVisible) return
+              setForm(undefined)
+              reload()
+            }}
+            download={download}
+          />
+        )}
+      </ModalPopup>
+      <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+          <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+            <DataTable
+              columns={columns}
+              data={data?.contracts || []}
+              progressPending={loading}
+              pagination
+              paginationServer
+              paginationTotalRows={totalRows}
+              onChangeRowsPerPage={(rowsPerPage, page) => {
+                setRowsPerPage(rowsPerPage)
+              }}
+              onChangePage={(page) => {
+                setPage(page)
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   )
 }

@@ -1,8 +1,7 @@
 'use client'
 
 import ModalPopup from '@/components/ModalPopup'
-import { Navbar } from '@/components/Navbar'
-import { Sidebar } from '@/components/Sidebar'
+import { NavbarContext } from '@/context/navbar'
 import { useTable } from '@/hooks/use-table'
 import { getOrganizationList } from '@/services/organizations'
 import '@/styles/tailwind.scss'
@@ -14,11 +13,30 @@ import {
   PlusCircleIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline'
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import ModalForm from './ModalForm'
 
 export default function Organizations() {
+  const { _, setNavbar } = useContext(NavbarContext)
+
+  setNavbar({
+    breadcrumbs: [
+      { name: 'Pengaturan', href: '/settings', current: false },
+      {
+        name: 'Manajemen Organisasi',
+        href: '/settings/organizations',
+        current: true,
+      },
+    ],
+    breadcrumbIcon: (
+      <Cog6ToothIcon
+        className="h-5 w-5 flex-shrink-0"
+        aria-hidden="true"
+      />
+    )
+  })
+
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
   const [organization, setOrganization] = useState({})
@@ -119,102 +137,70 @@ export default function Organizations() {
   ]
 
   return (
-    <>
-      <div>
-        <Sidebar
-          tab="settings"
-          sidebarOpen={sidebarOpen}
-          onSidebarOpen={(sidebarIsOpen) => {
-            setSidebarOpen(sidebarIsOpen)
-          }}
-        />
-        <Navbar
-          breadcrumbs={[
-            { name: 'Pengaturan', href: '/settings', current: false },
-            {
-              name: 'Manajemen Organisasi',
-              href: '/settings/organizations',
-              current: true,
-            },
-          ]}
-          breadcrumbIcon={
-            <Cog6ToothIcon
-              className="h-5 w-5 flex-shrink-0"
-              aria-hidden="true"
-            />
-          }
-          sidebarOpen={sidebarOpen}
-          onSidebarOpen={(sidebarIsOpen) => {
-            setSidebarOpen(sidebarIsOpen)
-          }}
+    <div className="px-4 sm:px-6 lg:px-8">
+      <div className="sm:flex">
+        <div className="sm:flex-auto">
+          <button
+            type="button"
+            className="flex items-center justify-between gap-1 rounded-md bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
+            onClick={() => {
+              setOrganization({})
+              setType('add')
+            }}
+          >
+            <PlusCircleIcon className="h-5 w-5 flex-shrink-0" />
+            <span>Tambah organisasi</span>
+          </button>
+        </div>
+        <form className="relative flex flex-1" action="#" method="GET">
+          <MagnifyingGlassIcon
+            className="pointer-events-none absolute inset-y-0 left-0 ml-2 h-full w-5 text-gray-400"
+            aria-hidden="true"
+          />
+          <input
+            id="search-field"
+            className="border-1 block h-full w-full rounded border-[#D9D9D9] py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
+            placeholder="Cari Organisasi"
+            type="search"
+            name="search"
+            onChange={(event) => {
+              onSearch({ "name": event.target.value })
+            }}
+          />
+        </form>
+      </div>
+      <div className="mt-8 flow-root">
+        <ModalPopup
+          height={type !== 'delete' ? 800 : 300}
+          visible={modalVisible}
+          onClose={(currentModalVisible) => reload()}
         >
-          <div className="px-4 sm:px-6 lg:px-8">
-            <div className="sm:flex">
-              <div className="sm:flex-auto">
-                <button
-                  type="button"
-                  className="flex items-center justify-between gap-1 rounded-md bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
-                  onClick={() => {
-                    setOrganization({})
-                    setType('add')
-                  }}
-                >
-                  <PlusCircleIcon className="h-5 w-5 flex-shrink-0" />
-                  <span>Tambah organisasi</span>
-                </button>
-              </div>
-              <form className="relative flex flex-1" action="#" method="GET">
-                <MagnifyingGlassIcon
-                  className="pointer-events-none absolute inset-y-0 left-0 ml-2 h-full w-5 text-gray-400"
-                  aria-hidden="true"
-                />
-                <input
-                  id="search-field"
-                  className="border-1 block h-full w-full rounded border-[#D9D9D9] py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-                  placeholder="Cari Organisasi"
-                  type="search"
-                  name="search"
-                  onChange={(event) => {
-                    onSearch({ "name": event.target.value })
-                  }}
-                />
-              </form>
-            </div>
-            <div className="mt-8 flow-root">
-              <ModalPopup
-                height={type !== 'delete' ? 800 : 300}
-                visible={modalVisible}
-                onClose={(currentModalVisible) => reload()}
-              >
-                <ModalForm
-                  type={type}
-                  data={organization}
-                  onClose={(currentModalVisible) => reload()}
-                />
-              </ModalPopup>
-              <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                  <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-                    <DataTable
-                      columns={columns}
-                      data={data.organizations || []}
-                      progressPending={loading}
-                      pagination
-                      paginationServer
-                      paginationTotalRows={totalRows}
-                      onChangeRowsPerPage={(newPerPage, page) => {
-                        setPage(page)
-                        setRowsPerPage(newPerPage)
-                      }}
-                      onChangePage={(page, totalRows) => setPage(page)}
-                    />
-                  </div>
-                </div>
-              </div>
+          <ModalForm
+            type={type}
+            data={organization}
+            onClose={(currentModalVisible) => reload()}
+          />
+        </ModalPopup>
+        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+              <DataTable
+                columns={columns}
+                data={data.organizations || []}
+                progressPending={loading}
+                pagination
+                paginationServer
+                paginationTotalRows={totalRows}
+                onChangeRowsPerPage={(newPerPage, page) => {
+                  setPage(page)
+                  setRowsPerPage(newPerPage)
+                }}
+                onChangePage={(page, totalRows) => setPage(page)}
+              />
             </div>
           </div>
-        </Navbar>
+        </div>
       </div>
-    </>
+    </div>
   )
 }
