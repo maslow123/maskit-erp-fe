@@ -16,7 +16,7 @@ import {
   ShoppingCartIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useContext, useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import ModalForm from './ModalForm'
 import { useTable } from '@/hooks/use-table'
@@ -31,13 +31,34 @@ import { downloadContract, getContractList } from '@/services/contracts'
 import { ArrowUpOnSquareIcon } from '@heroicons/react/20/solid'
 import { Menu, Transition } from '@headlessui/react'
 import { getPlanItemList } from '@/services/plan-items'
+import { NavbarContext } from '@/context/navbar'
 
 export default function Page() {
   const { user } = useAuth()
+  const { _, setNavbar } = useContext(NavbarContext)
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [form, setForm] = useState()
   const [supplierList, setSupplierList] = useState([])
+
+  useEffect(() => {
+    setNavbar({
+      breadcrumbs: [
+        { name: 'Pembelian', href: '/purchase', current: false },
+        {
+          name: 'Manajemen Perencanaan Pembelian',
+          href: '/purchase/plan-item',
+          current: true,
+        },
+      ],
+      breadcrumbIcon: (
+        <ShoppingCartIcon
+          className="h-5 w-5 flex-shrink-0"
+          aria-hidden="true"
+        />
+      ),
+    })
+  }, [])
 
   useEffect(() => {
     const getSuppliers = async () => {
@@ -106,7 +127,7 @@ export default function Page() {
       name: 'Aksi',
       width: '300px',
       selector: (row) => (
-        <div className="flex flex-row flex-wrap justify-between gap-1">          
+        <div className="flex flex-row flex-wrap justify-between gap-1">
           <button
             onClick={() => setForm({ ...row, type: 'edit' })}
             type="button"
@@ -151,211 +172,184 @@ export default function Page() {
   return (
     <>
       <div>
-        <Sidebar
-          tab="purchase"
-          sidebarOpen={sidebarOpen}
-          onSidebarOpen={(sidebarIsOpen) => {
-            setSidebarOpen(sidebarIsOpen)
-          }}
-        />
-        <Navbar
-          breadcrumbs={[
-            { name: 'Pembelian', href: '/purchase', current: false },
-            {
-              name: 'Manajemen Perencanaan Pembelian',
-              href: '/purchase/plan-item',
-              current: true,
-            },
-          ]}
-          breadcrumbIcon={
-            <ShoppingCartIcon
-              className="h-5 w-5 flex-shrink-0"
-              aria-hidden="true"
-            />
-          }
-          sidebarOpen={sidebarOpen}
-          onSidebarOpen={(sidebarIsOpen) => {
-            setSidebarOpen(sidebarIsOpen)
-          }}
-        >
-          <div className="px-4 sm:px-6 lg:px-8">
-            <div className="sm:flex">
-              <div className="flex flex-row gap-2 sm:flex-auto">
-                <div className="flex flex-row items-center gap-3 font-bold">
-                  <span>Pilih Supplier</span>
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="sm:flex">
+            <div className="flex flex-row gap-2 sm:flex-auto">
+              <div className="flex flex-row items-center gap-3 font-bold">
+                <span>Pilih Supplier</span>
 
-                  <select
-                    onChange={(e) => {}}
-                    name="sort"
-                    id=""
-                    className="w-[150px] appearance-none rounded-md border border-gray-200 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-blue-500 sm:text-sm"
-                  >
-                    <option selected disabled>
-                      {' '}
-                      Pilih supplier
-                    </option>
-                    {supplierList?.length > 0 &&
-                      supplierList.map((s, i) => (
-                        <option key={i} value={s.id}>
-                          {s.name}
-                        </option>
-                      ))}
-                  </select>
-                </div>
-              </div>
-              <form className="relative flex flex-1" action="#" method="GET">
-                <MagnifyingGlassIcon
-                  className="pointer-events-none absolute inset-y-0 left-0 ml-2 h-full w-5 text-gray-400"
-                  aria-hidden="true"
-                />
-                <input
-                  id="search-field"
-                  className="border-1 block h-full w-full rounded border-[#D9D9D9] py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-                  placeholder="Cari Item atau Supplier"
-                  type="search"
-                  name="search"
-                  onChange={(event) => {
-                    onSearch({ name: event.target.value })
-                  }}
-                />
-              </form>
-              {/* Menu Button */}
-              <Menu as="div" className="relative inline-block text-left">
-                <div>
-                  <Menu.Button className="ml-3 flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]">
-                    <PlusCircleIcon
-                      className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                      aria-hidden="true"
-                    />
-                    Tambah Purchase Request
-                    <ChevronDownIcon
-                      className="-mr-1 h-5 w-5 text-gray-400"
-                      aria-hidden="true"
-                    />
-                  </Menu.Button>
-                </div>
-
-                <Transition
-                  as={Fragment}
-                  enter="transition ease-out duration-100"
-                  enterFrom="transform opacity-0 scale-95"
-                  enterTo="transform opacity-100 scale-100"
-                  leave="transition ease-in duration-75"
-                  leaveFrom="transform opacity-100 scale-100"
-                  leaveTo="transform opacity-0 scale-95"
+                <select
+                  onChange={(e) => {}}
+                  name="sort"
+                  id=""
+                  className="w-[150px] appearance-none rounded-md border border-gray-200 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-blue-500 sm:text-sm"
                 >
-                  <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <div className="py-1">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            // onClick={download}
-                            className={classNames(
-                              active
-                                ? 'bg-gray-100 text-gray-900'
-                                : 'text-gray-700',
-                              'group flex items-center px-4 py-2 text-sm',
-                            )}
-                          >
-                            <PlusCircleIcon
-                              className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                              aria-hidden="true"
-                            />
-                            PR Mingguan
-                          </a>
-                        )}
-                      </Menu.Item>
-                    </div>
-                    <div className="py-1">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            // onClick={() => hiddenFileInput.current.click()}
-                            className={classNames(
-                              active
-                                ? 'bg-gray-100 text-gray-900'
-                                : 'text-gray-700',
-                              'group flex items-center px-4 py-2 text-sm',
-                            )}
-                          >
-                            <PlusCircleIcon
-                              className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                              aria-hidden="true"
-                            />
-                            PR Bulanan
-                          </a>
-                        )}
-                      </Menu.Item>
-                    </div>
-                  </Menu.Items>
-                </Transition>
-              </Menu>
+                  <option selected disabled>
+                    {' '}
+                    Pilih supplier
+                  </option>
+                  {supplierList?.length > 0 &&
+                    supplierList.map((s, i) => (
+                      <option key={i} value={s.id}>
+                        {s.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
             </div>
-            <div className="my-3">
-              <button
-                type="button"
-                className="flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
-                onClick={() => {
-                  setForm({
-                    supplier_id: '',
-                    unit_id: '541c38b5-91d5-4c65-a67b-3639061a79e8',
-                    name: '',
-                    weekly_avg: '',
-                    monthly_avg: '',
-                    type: 'add',
-                  })
+            <form className="relative flex flex-1" action="#" method="GET">
+              <MagnifyingGlassIcon
+                className="pointer-events-none absolute inset-y-0 left-0 ml-2 h-full w-5 text-gray-400"
+                aria-hidden="true"
+              />
+              <input
+                id="search-field"
+                className="border-1 block h-full w-full rounded border-[#D9D9D9] py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
+                placeholder="Cari Item atau Supplier"
+                type="search"
+                name="search"
+                onChange={(event) => {
+                  onSearch({ name: event.target.value })
                 }}
-              >
-                <PlusCircleIcon className="h-5 w-5 flex-shrink-0" />
-                <span>Tambah Item</span>
-              </button>
-            </div>
-            <div className="mt-8 flow-root">
-              <ModalPopup
-                height={form?.type === 'delete' ? 200 : 500}
-                visible={form != undefined}
-                onClose={(currentModalVisible) => {
-                  if (currentModalVisible) return
-                  setForm(undefined)
-                  reload()
-                }}
-              >
-                {form && (
-                  <ModalForm
-                    suppliers={supplierList}
-                    data={form}
-                    onClose={(currentModalVisible) => {
-                      if (currentModalVisible) return
-                      setForm(undefined)
-                      reload()
-                    }}
-                    download={download}
+              />
+            </form>
+            {/* Menu Button */}
+            <Menu as="div" className="relative inline-block text-left">
+              <div>
+                <Menu.Button className="ml-3 flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]">
+                  <PlusCircleIcon
+                    className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                    aria-hidden="true"
                   />
-                )}
-              </ModalPopup>
-              <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                  <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-                    <DataTable
-                      columns={columns}
-                      data={data?.purchase_plan_items || []}
-                      progressPending={loading}
-                      pagination
-                      paginationServer
-                      paginationTotalRows={totalRows}
-                      onChangeRowsPerPage={(rowsPerPage, page) => {
-                        setRowsPerPage(rowsPerPage)
-                      }}
-                      onChangePage={(page) => {
-                        setPage(page)
-                      }}
-                    />
+                  Tambah Purchase Request
+                  <ChevronDownIcon
+                    className="-mr-1 h-5 w-5 text-gray-400"
+                    aria-hidden="true"
+                  />
+                </Menu.Button>
+              </div>
+
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className="py-1">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          // onClick={download}
+                          className={classNames(
+                            active
+                              ? 'bg-gray-100 text-gray-900'
+                              : 'text-gray-700',
+                            'group flex items-center px-4 py-2 text-sm',
+                          )}
+                        >
+                          <PlusCircleIcon
+                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                            aria-hidden="true"
+                          />
+                          PR Mingguan
+                        </a>
+                      )}
+                    </Menu.Item>
                   </div>
+                  <div className="py-1">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          // onClick={() => hiddenFileInput.current.click()}
+                          className={classNames(
+                            active
+                              ? 'bg-gray-100 text-gray-900'
+                              : 'text-gray-700',
+                            'group flex items-center px-4 py-2 text-sm',
+                          )}
+                        >
+                          <PlusCircleIcon
+                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                            aria-hidden="true"
+                          />
+                          PR Bulanan
+                        </a>
+                      )}
+                    </Menu.Item>
+                  </div>
+                </Menu.Items>
+              </Transition>
+            </Menu>
+          </div>
+          <div className="my-3">
+            <button
+              type="button"
+              className="flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
+              onClick={() => {
+                setForm({
+                  supplier_id: '',
+                  unit_id: '541c38b5-91d5-4c65-a67b-3639061a79e8',
+                  name: '',
+                  weekly_avg: '',
+                  monthly_avg: '',
+                  type: 'add',
+                })
+              }}
+            >
+              <PlusCircleIcon className="h-5 w-5 flex-shrink-0" />
+              <span>Tambah Item</span>
+            </button>
+          </div>
+          <div className="mt-8 flow-root">
+            <ModalPopup
+              height={form?.type === 'delete' ? 200 : 500}
+              visible={form != undefined}
+              onClose={(currentModalVisible) => {
+                if (currentModalVisible) return
+                setForm(undefined)
+                reload()
+              }}
+            >
+              {form && (
+                <ModalForm
+                  suppliers={supplierList}
+                  data={form}
+                  onClose={(currentModalVisible) => {
+                    if (currentModalVisible) return
+                    setForm(undefined)
+                    reload()
+                  }}
+                  download={download}
+                />
+              )}
+            </ModalPopup>
+            <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+              <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+                  <DataTable
+                    columns={columns}
+                    data={data?.purchase_plan_items || []}
+                    progressPending={loading}
+                    pagination
+                    paginationServer
+                    paginationTotalRows={totalRows}
+                    onChangeRowsPerPage={(rowsPerPage, page) => {
+                      setRowsPerPage(rowsPerPage)
+                    }}
+                    onChangePage={(page) => {
+                      setPage(page)
+                    }}
+                  />
                 </div>
               </div>
             </div>
           </div>
-        </Navbar>
+        </div>
+        {/* </Navbar> */}
       </div>
     </>
   )
