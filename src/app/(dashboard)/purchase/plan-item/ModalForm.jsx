@@ -5,7 +5,7 @@ import { formatCommonDate, showToast } from '@/util/helper'
 import { ArrowUpOnSquareIcon } from '@heroicons/react/24/outline'
 import React, { useRef, useState } from 'react'
 
-export default function ModalForm({ data, onClose, suppliers, download }) {
+export default function ModalForm({ data, onClose, suppliers, units }) {
   console.log({ data })
   const [formData, setFormData] = useState({ ...data })
   const [loading, setLoading] = useState(false)
@@ -119,26 +119,26 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
     },
     {
       label: 'Unit',
-      state: 'supplier_id',
+      state: 'unit_id',
       form: (
         <select
           disabled={data?.type === 'view'}
-          value={formData?.supplier_id}
+          value={formData?.unit_id}
           required
           type="text"
-          name="supplier_id"
+          name="unit_id"
           className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
           placeholder="Pilih Nama Supplier"
-          onChange={(e) => handlePayload('supplier_id', e.target.value)}
+          onChange={(e) => handlePayload('unit_id', e.target.value)}
         >
           <option value={null} selected>
             Pilih Unit
           </option>
-          {suppliers.map((e, i) => (
+          {units.map((e, i) => (
             <option
               key={i}
               value={e.id}
-              selected={data.type === 'edit' && formData?.supplier_id === e.id}
+              selected={data.type === 'edit' && formData?.unit_id === e.id}
             >
               {e.name}
             </option>
