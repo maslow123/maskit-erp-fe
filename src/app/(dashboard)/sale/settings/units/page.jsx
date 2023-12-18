@@ -1,14 +1,15 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client'
+
+import '@/styles/tailwind.scss'
+
 import ModalPopup from '@/components/ModalPopup'
 import { useAuth } from '@/context/auth'
 import { NavbarContext } from '@/context/navbar'
 import { useTable } from '@/hooks/use-table'
-import { deleteUser, getUserList } from '@/services/users'
-import '@/styles/tailwind.scss'
+import { deleteUnit, getUnitList } from '@/services/units'
+import { showToast } from '@/util/helper'
 import {
-  Cog6ToothIcon,
-  MagnifyingGlassIcon,
+  Cog6ToothIcon, MagnifyingGlassIcon,
   PencilSquareIcon,
   PlusCircleIcon,
   TrashIcon
@@ -17,7 +18,8 @@ import { useContext, useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import ModalForm from './ModalForm'
 
-export default function User() {
+
+export default function Unit() {
   const { user } = useAuth();
 
   const { _, setNavbar } = useContext(NavbarContext)
@@ -25,12 +27,9 @@ export default function User() {
   useEffect(() => {
     setNavbar({
       breadcrumbs: [
-        { name: 'Pengaturan', href: '/settings', current: false },
-        {
-          name: 'Manajemen Pengguna',
-          href: '/settings/users',
-          current: true,
-        },
+        { name: 'Penjualan', href: '/sale', current: false },
+        { name: 'Pengaturan Penjualan', href: '/sale/settings', current: false },
+        { name: 'Management Unit', href: '/sale/settings/units', current: false },
       ],
       breadcrumbIcon: (
         <Cog6ToothIcon
@@ -40,7 +39,7 @@ export default function User() {
       )
     })
   }, [])
-  
+
   const [form, setForm] = useState()
   const [deleteId, setDeleteId] = useState()
 
@@ -59,33 +58,25 @@ export default function User() {
     setPage,
     query,
     setQuery,
+    order,
+    setOrder,
     onSearch,
     reload
-  } = useTable(getUserList, {
+  } = useTable(getUnitList, {
     // name: "",
-    organization_id: user.level == "Super Admin" ? "" : user.org_id,
-    include_deleted: false,
+    order_by: "id",
+    // include_deleted: false,
   })
+
 
   const columns = [
     {
       name: 'ID',
       selector: (row) => row.id,
     },
-    user.level == "Super Admin" ? {
-      name: 'Nama Usaha',
-      selector: (row) => row.organization_name,
-    } : {
-      name: 'Level Pengguna',
-      selector: (row) => row.level,
-    },
     {
-      name: 'Nama Pengguna',
+      name: 'Nama Unit',
       selector: (row) => row.name,
-    },
-    {
-      name: 'Email',
-      selector: (row) => row.email,
     },
     {
       name: 'Aksi',
@@ -115,7 +106,7 @@ export default function User() {
   const deleteData = async (id) => {
     setLoading(true)
     try {
-      const resp = await deleteUser(id)
+      const resp = await deleteUnit(id)
 
       if (resp.status >= 300) {
         throw new Error(resp.message)
@@ -141,15 +132,12 @@ export default function User() {
               className="flex items-center justify-between gap-1 rounded-md bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
               onClick={() => {
                 setForm({
-                  ...(user.level == "Super Admin" ? { organization_name: null } : { name: null }),
                   name: null,
-                  email: null,
-                  password: null,
                 })
               }}
             >
               <PlusCircleIcon className="h-5 w-5 flex-shrink-0" />
-              <span>Tambah Pengguna</span>
+              <span>Tambah Unit</span>
             </button>
           </div>
           <form className="relative flex flex-1" action="#" method="GET">
@@ -171,7 +159,7 @@ export default function User() {
         </div>
         <div className="mt-8 flow-root">
           <ModalPopup
-            height={450}
+            height={250}
             visible={form != undefined}
             onClose={(currentModalVisible) => {
               if (currentModalVisible) return
@@ -193,7 +181,7 @@ export default function User() {
               <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
                 <DataTable
                   columns={columns}
-                  data={data?.users || []}
+                  data={data?.units || []}
                   progressPending={loading}
                   pagination
                   paginationServer

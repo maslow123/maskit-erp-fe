@@ -39,7 +39,6 @@ export default function Organizations() {
     })
   }, [])
 
-  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
   const [organization, setOrganization] = useState({})
   const [type, setType] = useState('')

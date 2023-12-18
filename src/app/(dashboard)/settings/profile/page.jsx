@@ -232,7 +232,7 @@ export default function Profile() {
     try {
       const resp = await updateCurrentOrganization(formData)
 
-      if (resp.status !== 200) {
+      if (resp.status >= 300) {
         throw new Error(resp.message)
       }
 

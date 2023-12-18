@@ -2,7 +2,7 @@
 import Loading from '@/components/Loading'
 import { useAuth } from '@/context/auth'
 import { getOrganizationList } from '@/services/organizations'
-import { createUser } from '@/services/user'
+import { createUser } from '@/services/users'
 import { showToast } from '@/util/helper'
 import { useEffect, useState } from 'react'
 
@@ -140,7 +140,7 @@ export default function ModalForm({ data, onClose }) {
         resp = await createUser(formData)
       }
 
-      if (resp.status !== 200) {
+      if (resp.status >= 300) {
         throw new Error(resp.message)
       }
 
@@ -175,7 +175,7 @@ export default function ModalForm({ data, onClose }) {
           disabled={loading || !Object.values(formData).every(e => e)}
           className="flex items-center justify-between gap-1 rounded-md bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252] disabled:cursor-not-allowed disabled:bg-blue-theme/50"
         >
-          {loading ? <Loading /> : <span>Simpan</span>}
+          {loading ? <Loading /> : <span>{formData.id ? "Ubah" : "Simpan"}</span>}
         </button>
         <button
           type="button"

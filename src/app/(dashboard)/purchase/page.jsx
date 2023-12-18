@@ -56,7 +56,6 @@ export default function Purchase() {
       href: '#'
     },
   ]
-  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
     <ul

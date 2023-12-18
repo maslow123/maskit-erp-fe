@@ -48,7 +48,6 @@ export default function Page() {
 
   const hiddenFileInput = useRef(null)
 
-  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [form, setForm] = useState()
   const [deleteIds, setDeleteIds] = useState([])
   const {
@@ -175,7 +174,8 @@ export default function Page() {
     setLoading(true)
     try {
       const resp = await deleteBatchSupplier(deleteIds)
-      if (resp.status !== 200) {
+
+      if (resp.status >= 300) {
         throw new Error(resp.message)
       }
 

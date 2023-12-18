@@ -45,7 +45,6 @@ export default function Page() {
     })
   }, [])
 
-  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [form, setForm] = useState()
   const [supplierList, setSupplierList] = useState([])
 

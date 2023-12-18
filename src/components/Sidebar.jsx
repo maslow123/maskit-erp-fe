@@ -49,7 +49,7 @@ export function Sidebar({ onSidebarOpen, sidebarOpen, tab }) {
     },
     {
       name: 'Penjualan',
-      href: '#',
+      href: '/sale',
       icon: DocumentChartBarIcon,
       current: tab === 'dashboard',
     },

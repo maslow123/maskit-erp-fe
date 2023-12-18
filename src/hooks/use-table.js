@@ -7,6 +7,7 @@ export const useTable = (tableEndpoint, initialQuery) => {
     const [data, setData] = useState([])
     const [totalRows, setTotalRows] = useState(0)
     const [rowsPerPage, setRowsPerPage] = useState(10)
+    const [order, setOrder] = useState("asc")
     const [page, setPage] = useState(1)
     const [error, setError] = useState(1)
     const [query, setQuery] = useState(initialQuery)
@@ -31,17 +32,19 @@ export const useTable = (tableEndpoint, initialQuery) => {
         fetchData({
             offset: offset,
             limit: rowsPerPage,
+            order: order,
             ...query
         })
-    }, [page, rowsPerPage, query])
+    }, [page, rowsPerPage, order, query])
 
     useEffect(() => {
         fetchData({
             offset: offset,
             limit: rowsPerPage,
+            order: order,
             ...query
         })
-    }, [page, rowsPerPage, query])
+    }, [page, rowsPerPage, order, query])
 
     useEffect(() => reload(), [])
 
@@ -68,6 +71,8 @@ export const useTable = (tableEndpoint, initialQuery) => {
         setPage,
         query,
         setQuery,
+        order,
+        setOrder,
         onSearch,
         reload
     }
