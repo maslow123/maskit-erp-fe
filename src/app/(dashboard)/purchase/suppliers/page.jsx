@@ -18,9 +18,10 @@ import {
   ShoppingCartIcon,
   TrashIcon
 } from '@heroicons/react/24/outline'
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { Fragment, useContext, useEffect, useRef, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import ModalForm from './ModalForm'
+import { NavbarContext } from '@/context/navbar'
 
 export default function Page() {
   const { user } = useAuth()
