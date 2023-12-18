@@ -13,7 +13,7 @@ import {
   PlusCircleIcon,
   TrashIcon
 } from '@heroicons/react/24/outline'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import ModalForm from './ModalForm'
 
@@ -22,22 +22,24 @@ export default function User() {
 
   const { _, setNavbar } = useContext(NavbarContext)
 
-  setNavbar({
-    breadcrumbs: [
-      { name: 'Pengaturan', href: '/settings', current: false },
-      {
-        name: 'Manajemen Pengguna',
-        href: '/settings/users',
-        current: true,
-      },
-    ],
-    breadcrumbIcon: (
-      <Cog6ToothIcon
-        className="h-5 w-5 flex-shrink-0"
-        aria-hidden="true"
-      />
-    )
-  })
+  useEffect(() => {
+    setNavbar({
+      breadcrumbs: [
+        { name: 'Pengaturan', href: '/settings', current: false },
+        {
+          name: 'Manajemen Pengguna',
+          href: '/settings/users',
+          current: true,
+        },
+      ],
+      breadcrumbIcon: (
+        <Cog6ToothIcon
+          className="h-5 w-5 flex-shrink-0"
+          aria-hidden="true"
+        />
+      )
+    })
+  }, [])
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [form, setForm] = useState()

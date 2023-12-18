@@ -9,23 +9,25 @@ import usersImage from '@/images/settings/users.png'
 import { Cog6ToothIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 
 export default function Settings() {
   const { _, setNavbar } = useContext(NavbarContext)
 
-  setNavbar({
-    breadcrumbs: [
-      { name: 'Pengaturan', href: '/settings', current: false },
-      // { name: 'Project Nero', href: '#', current: true },
-    ],
-    breadcrumbIcon: (
-      <Cog6ToothIcon
-        className="h-5 w-5 flex-shrink-0"
-        aria-hidden="true"
-      />
-    )
-  })
+  useEffect(() => {
+    setNavbar({
+      breadcrumbs: [
+        { name: 'Pengaturan', href: '/settings', current: false },
+        // { name: 'Project Nero', href: '#', current: true },
+      ],
+      breadcrumbIcon: (
+        <Cog6ToothIcon
+          className="h-5 w-5 flex-shrink-0"
+          aria-hidden="true"
+        />
+      )
+    })
+  }, [])
 
   const cards = [
     {
@@ -56,8 +58,7 @@ export default function Settings() {
   ]
 
   return (
-    <ul
-      role="list"
+    <div
       className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
     >
       {cards.map((card, i) => (
@@ -76,6 +77,6 @@ export default function Settings() {
           </div>
         </Link>
       ))}
-    </ul>
+    </div>
   )
 }

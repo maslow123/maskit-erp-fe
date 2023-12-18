@@ -8,23 +8,26 @@ import supplierImage from '@/images/purchase/supplier.png'
 import { ShoppingCartIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 
 export default function Purchase() {
   const { _, setNavbar } = useContext(NavbarContext)
 
-  setNavbar({
-    breadcrumbs: [
-      { name: 'Pembelian', href: '/purchase', current: false },
-      // { name: 'Project Nero', href: '#', current: true },
-    ],
-    breadcrumbIcon: (
-      <ShoppingCartIcon
-        className="h-5 w-5 flex-shrink-0"
-        aria-hidden="true"
-      />
-    )
-  })
+  useEffect(() => {
+    setNavbar({
+      breadcrumbs: [
+        { name: 'Pembelian', href: '/purchase', current: false },
+        // { name: 'Project Nero', href: '#', current: true },
+      ],
+      breadcrumbIcon: (
+        <ShoppingCartIcon
+          className="h-5 w-5 flex-shrink-0"
+          aria-hidden="true"
+        />
+      )
+    })
+
+  }, [])
 
   const cards = [
     {

@@ -1,6 +1,6 @@
 'use client';
 
-import { headers } from '../headers'
+import { headers } from '../headers';
 
 const update = async (data, organizationID) => {
     console.log('before update...', { data }, { organizationID })

@@ -20,22 +20,24 @@ import ModalForm from './ModalForm'
 export default function Organizations() {
   const { _, setNavbar } = useContext(NavbarContext)
 
-  setNavbar({
-    breadcrumbs: [
-      { name: 'Pengaturan', href: '/settings', current: false },
-      {
-        name: 'Manajemen Organisasi',
-        href: '/settings/organizations',
-        current: true,
-      },
-    ],
-    breadcrumbIcon: (
-      <Cog6ToothIcon
-        className="h-5 w-5 flex-shrink-0"
-        aria-hidden="true"
-      />
-    )
-  })
+  useEffect(() => {
+    setNavbar({
+      breadcrumbs: [
+        { name: 'Pengaturan', href: '/settings', current: false },
+        {
+          name: 'Manajemen Organisasi',
+          href: '/settings/organizations',
+          current: true,
+        },
+      ],
+      breadcrumbIcon: (
+        <Cog6ToothIcon
+          className="h-5 w-5 flex-shrink-0"
+          aria-hidden="true"
+        />
+      )
+    })
+  }, [])
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)

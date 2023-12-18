@@ -26,22 +26,24 @@ export default function Page() {
 
   const { _, setNavbar } = useContext(NavbarContext)
 
-  setNavbar({
-    breadcrumbs: [
-      { name: 'Pembelian', href: '/purchase', current: false },
-      {
-        name: 'Manajemen Kontrak',
-        href: '/purchase/contracts',
-        current: true,
-      },
-    ],
-    breadcrumbIcon: (
-      <ShoppingCartIcon
-        className="h-5 w-5 flex-shrink-0"
-        aria-hidden="true"
-      />
-    )
-  })
+  useEffect(() => {
+    setNavbar({
+      breadcrumbs: [
+        { name: 'Pembelian', href: '/purchase', current: false },
+        {
+          name: 'Manajemen Kontrak',
+          href: '/purchase/contracts',
+          current: true,
+        },
+      ],
+      breadcrumbIcon: (
+        <ShoppingCartIcon
+          className="h-5 w-5 flex-shrink-0"
+          aria-hidden="true"
+        />
+      )
+    })
+  }, [])
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [form, setForm] = useState()
@@ -76,7 +78,7 @@ export default function Page() {
     setMoreQuery,
     onSearch,
     reload,
-  } = useTable(getContractList, {    
+  } = useTable(getContractList, {
     supplier_id: '',
     terms_of_payment: '',
     down_payment: '',
@@ -116,11 +118,11 @@ export default function Page() {
       name: 'Lampiran Kontrak',
       selector: (row) => (
 
-        <button 
+        <button
           onClick={() => download(row.id)}
           className='w-full inline-flex items-center gap-x-0.5 border border-3 border-[#D9D9D9] rounded-full bg-[#FCB900] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm hover:bg-[#FCB900] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FCB900]'
         >
-          <ArrowUpOnSquareIcon className='ml-0.5 h-5 w-5' aria-hidden="true"/>
+          <ArrowUpOnSquareIcon className='ml-0.5 h-5 w-5' aria-hidden="true" />
           Unduh
         </button>
       ),
@@ -129,7 +131,7 @@ export default function Page() {
       name: 'Aksi',
       selector: (row) => (
         <div className="flex flex-row flex-wrap justify-between gap-1">
-          <button            
+          <button
             onClick={() => setForm({ ...row, type: 'view' })}
             type="button"
             className="inline-flex items-center gap-x-0.5 rounded-md bg-[#5A5252] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm hover:bg-[#5A5252] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
@@ -155,95 +157,95 @@ export default function Page() {
           </button>
         </div>
       ),
-    }    
+    }
   ]
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
-    <div className="sm:flex">
-      <div className="flex flex-row gap-2 sm:flex-auto">
-        <button
-          type="button"
-          className="flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
-          onClick={() => {
-            setForm({
-              supplier_id: '',
-              terms_of_payment: '',
-              down_payment: '',
-              start_date: '',
-              end_date: '',
-              reminder: '',
-              notes: '',
-              attachment: null,
-              type: 'add',
-            })
+      <div className="sm:flex">
+        <div className="flex flex-row gap-2 sm:flex-auto">
+          <button
+            type="button"
+            className="flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
+            onClick={() => {
+              setForm({
+                supplier_id: '',
+                terms_of_payment: '',
+                down_payment: '',
+                start_date: '',
+                end_date: '',
+                reminder: '',
+                notes: '',
+                attachment: null,
+                type: 'add',
+              })
+            }}
+          >
+            <PlusCircleIcon className="h-5 w-5 flex-shrink-0" />
+            <span>Buat Kontrak</span>
+          </button>
+        </div>
+        <form className="relative flex flex-1" action="#" method="GET">
+          <MagnifyingGlassIcon
+            className="pointer-events-none absolute inset-y-0 left-0 ml-2 h-full w-5 text-gray-400"
+            aria-hidden="true"
+          />
+          <input
+            id="search-field"
+            className="border-1 block h-full w-full rounded border-[#D9D9D9] py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
+            placeholder="Cari Kontrak"
+            type="search"
+            name="search"
+            onChange={(event) => {
+              onSearch({ name: event.target.value })
+            }}
+          />
+        </form>
+      </div>
+      <div className="mt-8 flow-root">
+        <ModalPopup
+          height={form?.type === 'delete' ? 200 : 800}
+          visible={form != undefined}
+          onClose={(currentModalVisible) => {
+            if (currentModalVisible) return
+            setForm(undefined)
+            reload()
           }}
         >
-          <PlusCircleIcon className="h-5 w-5 flex-shrink-0" />
-          <span>Buat Kontrak</span>
-        </button>
-      </div>
-      <form className="relative flex flex-1" action="#" method="GET">
-        <MagnifyingGlassIcon
-          className="pointer-events-none absolute inset-y-0 left-0 ml-2 h-full w-5 text-gray-400"
-          aria-hidden="true"
-        />
-        <input
-          id="search-field"
-          className="border-1 block h-full w-full rounded border-[#D9D9D9] py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-          placeholder="Cari Kontrak"
-          type="search"
-          name="search"
-          onChange={(event) => {
-            onSearch({ name: event.target.value })
-          }}
-        />
-      </form>
-    </div>
-    <div className="mt-8 flow-root">
-      <ModalPopup
-        height={form?.type === 'delete' ? 200 : 800}
-        visible={form != undefined}
-        onClose={(currentModalVisible) => {
-          if (currentModalVisible) return
-          setForm(undefined)
-          reload()
-        }}
-      >
-        {form && (
-          <ModalForm
-            suppliers={supplierList}
-            data={form}
-            onClose={(currentModalVisible) => {
-              if (currentModalVisible) return
-              setForm(undefined)
-              reload()
-            }}
-            download={download}
-          />
-        )}
-      </ModalPopup>
-      <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-          <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-            <DataTable
-              columns={columns}
-              data={data?.contracts || []}
-              progressPending={loading}
-              pagination
-              paginationServer
-              paginationTotalRows={totalRows}
-              onChangeRowsPerPage={(rowsPerPage, page) => {
-                setRowsPerPage(rowsPerPage)
+          {form && (
+            <ModalForm
+              suppliers={supplierList}
+              data={form}
+              onClose={(currentModalVisible) => {
+                if (currentModalVisible) return
+                setForm(undefined)
+                reload()
               }}
-              onChangePage={(page) => {
-                setPage(page)
-              }}
+              download={download}
             />
+          )}
+        </ModalPopup>
+        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+              <DataTable
+                columns={columns}
+                data={data?.contracts || []}
+                progressPending={loading}
+                pagination
+                paginationServer
+                paginationTotalRows={totalRows}
+                onChangeRowsPerPage={(rowsPerPage, page) => {
+                  setRowsPerPage(rowsPerPage)
+                }}
+                onChangePage={(page) => {
+                  setPage(page)
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
   )
 }
