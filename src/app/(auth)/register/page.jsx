@@ -1,16 +1,15 @@
-import Link from 'next/link'
-
 import { Button } from '@/components/Button'
 import { SelectField, TextField } from '@/components/Fields'
 import { Logo } from '@/components/Logo'
 import { SlimLayout } from '@/components/SlimLayout'
+import Link from 'next/link'
 
 export const metadata = {
   title: 'Sign Up',
 }
 
 export default function Register() {
-  return (
+    return (
     <SlimLayout>
       <div className="flex">
         <Link href="/" aria-label="Home">

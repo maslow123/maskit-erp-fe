@@ -1,4 +1,5 @@
 'use client'
+
 import { SlimLayout } from '@/components/SlimLayout'
 import { EnvelopeIcon, EyeIcon, EyeslashIcon, LockIcon } from '@/icons'
 import { status } from '@/lib/constants'
@@ -6,11 +7,10 @@ import login from '@/services/auth/login'
 import { showToast } from '@/util/helper'
 import Cookies from 'js-cookie'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation';
 import { useState } from 'react'
 
 export default function Login() {
-  const [payload, setPayload] = useState({
+    const [payload, setPayload] = useState({
     email: 'superadmin@maskit.co.id',
     password: 'superadmin',
   })

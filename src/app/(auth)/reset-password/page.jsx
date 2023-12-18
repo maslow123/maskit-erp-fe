@@ -1,14 +1,14 @@
 'use client'
-import Notify from '@/components/Notify'
+
 import { SlimLayout } from '@/components/SlimLayout'
 import { EnvelopeIcon, EyeIcon, EyeslashIcon, LockIcon } from '@/icons'
-import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
 import { resetPassword } from '@/services/auth'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import React, { useEffect, useState } from 'react'
 
 export default function Login() {
-  const searchParams = useSearchParams()
+    const searchParams = useSearchParams()
   const token = searchParams.get('token')
 
   const [tokenIsValid, setTokenIsValid] = useState(false)
