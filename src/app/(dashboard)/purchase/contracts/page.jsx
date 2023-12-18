@@ -6,6 +6,8 @@ import { Sidebar } from '@/components/Sidebar'
 import { useAuth } from '@/context/auth'
 import '@/styles/tailwind.scss'
 import {
+  ArrowDownCircleIcon,
+  ChevronDownIcon,
   EyeIcon,
   MagnifyingGlassIcon,
   PencilSquareIcon,
@@ -13,14 +15,20 @@ import {
   ShoppingCartIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline'
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import DataTable from 'react-data-table-component'
 import ModalForm from './ModalForm'
 import { useTable } from '@/hooks/use-table'
-import { showToast } from '@/util/helper'
+import {
+  classNames,
+  formatCommonDate,
+  formatDate,
+  showToast,
+} from '@/util/helper'
 import { getSupplierList } from '@/services/suppliers'
 import { downloadContract, getContractList } from '@/services/contracts'
 import { ArrowUpOnSquareIcon } from '@heroicons/react/20/solid'
+import { Menu, Transition } from '@headlessui/react'
 
 export default function Page() {
   const { user } = useAuth()
@@ -56,9 +64,10 @@ export default function Page() {
     setPage,
     moreQuery,
     setMoreQuery,
+    setQuery,
     onSearch,
     reload,
-  } = useTable(getContractList, {    
+  } = useTable(getContractList, {
     supplier_id: '',
     terms_of_payment: '',
     down_payment: '',
@@ -69,6 +78,20 @@ export default function Page() {
     attachment: null,
   })
 
+  const sort = [
+    {
+      label: 'ID',
+      value: 'id'
+    },
+    {
+      label: 'Supplier',
+      value: 'supplier_name'
+    },
+    {
+      label: 'Berakhir Kontrak',
+      value: 'end_date'
+    },
+  ]
   const columns = [
     {
       name: 'ID',
@@ -88,7 +111,7 @@ export default function Page() {
     },
     {
       name: 'Tanggal Berakhir Kontrak',
-      selector: (row) => row.start_date,
+      selector: (row) => formatCommonDate(row.start_date),
     },
     {
       name: 'Catatan',
@@ -97,12 +120,11 @@ export default function Page() {
     {
       name: 'Lampiran Kontrak',
       selector: (row) => (
-
-        <button 
+        <button
           onClick={() => download(row.id)}
-          className='w-full inline-flex items-center gap-x-0.5 border border-3 border-[#D9D9D9] rounded-full bg-[#FCB900] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm hover:bg-[#FCB900] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FCB900]'
+          className="border-3 inline-flex w-full items-center gap-x-0.5 rounded-full border border-[#D9D9D9] bg-[#FCB900] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm hover:bg-[#FCB900] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FCB900]"
         >
-          <ArrowUpOnSquareIcon className='ml-0.5 h-5 w-5' aria-hidden="true"/>
+          <ArrowUpOnSquareIcon className="ml-0.5 h-5 w-5" aria-hidden="true" />
           Unduh
         </button>
       ),
@@ -111,7 +133,7 @@ export default function Page() {
       name: 'Aksi',
       selector: (row) => (
         <div className="flex flex-row flex-wrap justify-between gap-1">
-          <button            
+          <button
             onClick={() => setForm({ ...row, type: 'view' })}
             type="button"
             className="inline-flex items-center gap-x-0.5 rounded-md bg-[#5A5252] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm hover:bg-[#5A5252] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
@@ -122,7 +144,7 @@ export default function Page() {
           <button
             onClick={() => setForm({ ...row, type: 'edit' })}
             type="button"
-            className="!text-white inline-flex items-center gap-x-0.5 rounded-md bg-[#FBBC04] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm hover:bg-[#FBBC04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FBBC04]"
+            className="inline-flex items-center gap-x-0.5 rounded-md bg-[#FBBC04] px-1.5 py-0.5 text-sm font-semibold !text-white text-white shadow-sm hover:bg-[#FBBC04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FBBC04]"
           >
             <PencilSquareIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
             Ubah
@@ -137,7 +159,7 @@ export default function Page() {
           </button>
         </div>
       ),
-    }    
+    },
   ]
 
   return (
@@ -212,6 +234,27 @@ export default function Page() {
               </form>
             </div>
             <div className="mt-8 flow-root">
+              <div className="flex flex-row gap-3 items-center mb-5">
+                <span>Sort by</span>
+
+                <select
+                  onChange={e => {
+                    setQuery({
+                      order: 'ASC',
+                      order_by: e.target.value
+                    })
+                  }}
+                  name="sort"
+                  id=""
+                  className="w-[150px] appearance-none rounded-md border border-gray-200 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-blue-500 sm:text-sm"
+                >
+                  {
+                    sort.map((s, i) => (
+                      <option key={i} value={s.value}>{s.label}</option>
+                    ))
+                  }
+                </select>
+              </div>
               <ModalPopup
                 height={form?.type === 'delete' ? 200 : 800}
                 visible={form != undefined}

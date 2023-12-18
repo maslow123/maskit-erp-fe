@@ -27,7 +27,7 @@ export default function Purchase() {
     {
       title: 'Perencanaan Pembelian',
       image: purchasePlanImage,
-      href: '#'
+      href: '/purchase/plan-item'
     },
     {
       title: 'Pembelian Bahan Baku dan Operasional',

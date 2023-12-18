@@ -1,15 +1,11 @@
 import Loading from '@/components/Loading'
-import { createContract, deleteContract, updateContract } from '@/services/contracts'
+import { deleteContract, updateContract } from '@/services/contracts'
+import { createPlanItem, deletePlanItem, updatePlanItem } from '@/services/plan-items'
 import { formatCommonDate, showToast } from '@/util/helper'
 import { ArrowUpOnSquareIcon } from '@heroicons/react/24/outline'
 import React, { useRef, useState } from 'react'
 
 export default function ModalForm({ data, onClose, suppliers, download }) {
-  if (data.type !== 'add') {
-    data.start_date = formatCommonDate(data.start_date)
-    data.end_date = formatCommonDate(data.end_date)
-  }
-
   console.log({ data })
   const [formData, setFormData] = useState({ ...data })
   const [loading, setLoading] = useState(false)
@@ -30,26 +26,26 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
 
     switch (data.type) {
       case 'view':
-        modalData.title = 'Data Kontrak'
+        modalData.title = 'Data Item'
         modalData.bgButton = 'rounded bg-[#5A5252] px-3 py-3 text-white'
         modalData.disabled = true
         modalData.action = () => {}
 
         return modalData
       case 'add':
-        modalData.title = 'Tambah Kontrak'
+        modalData.title = 'Tambah Item'
         modalData.bgButton = 'rounded bg-[#5669CC] px-3 py-3 text-white'
         modalData.disabled = false
         modalData.action = (e) => {
-          addContract(e)
+          addPlanItem(e)
         }
         return modalData
       case 'edit':
-        modalData.title = 'Ubah Kontrak'
+        modalData.title = 'Ubah Item'
         modalData.bgButton = 'rounded bg-[#FBBC04] px-3 py-3 text-white'
         modalData.disabled = false
         modalData.action = (e) => {
-          editContract(e)
+          editPurchaseItem(e)
         }
 
         return modalData
@@ -60,20 +56,94 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
 
   const modalData = getData()
 
-  const inputs = [
+  const inputs = [   
     {
-      label: 'ID Kontrak',
-      state: 'id',
+      label: 'Nama Item',
+      state: 'name',
       form: (
         <input
-          disabled
+          disabled={data?.type === 'view'}
+          value={
+            data?.type !== 'add'
+              ? formData?.['name'] || data?.['name']
+              : formData?.['name'] || ''
+          }
           required
           type="text"
-          name="id"
+          name="name"
           className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
-          placeholder="Masukkan ID Supplier"
-          onChange={(e) => handlePayload('id', e.target.value)}
+          placeholder="Masukkan Nama Item"
+          onChange={(e) => handlePayload('name', e.target.value)}
         />
+      ),
+    },
+    {
+      label: 'Rata Konsumsi / Minggu',
+      state: 'weekly_avg',
+      form: (
+        <input
+          disabled={data?.type === 'view'}
+          value={
+            data?.type !== 'add'
+              ? formData?.['weekly_avg'] || data?.['weekly_avg']
+              : formData?.['weekly_avg'] || ''
+          }
+          required
+          type="text"
+          name="weekly_avg"
+          className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
+          placeholder="Masukkan Rata Konsumsi / Minggu"
+          onChange={(e) => handlePayload('weekly_avg', e.target.value)}
+        />
+      ),
+    },
+    {
+      label: 'Rata Konsumsi / Bulan',
+      state: 'monthly_avg',
+      form: (
+        <input
+          disabled={data?.type === 'view'}
+          value={
+            data?.type !== 'add'
+              ? formData?.['monthly_avg'] || data?.['monthly_avg']
+              : formData?.['monthly_avg'] || ''
+          }
+          required
+          type="text"
+          name="monthly_avg"
+          className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
+          placeholder="Masukkan Rata Konsumsi / Bulan"
+          onChange={(e) => handlePayload('monthly_avg', e.target.value)}
+        />
+      ),
+    },
+    {
+      label: 'Unit',
+      state: 'supplier_id',
+      form: (
+        <select
+          disabled={data?.type === 'view'}
+          value={formData?.supplier_id}
+          required
+          type="text"
+          name="supplier_id"
+          className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
+          placeholder="Pilih Nama Supplier"
+          onChange={(e) => handlePayload('supplier_id', e.target.value)}
+        >
+          <option value={null} selected>
+            Pilih Unit
+          </option>
+          {suppliers.map((e, i) => (
+            <option
+              key={i}
+              value={e.id}
+              selected={data.type === 'edit' && formData?.supplier_id === e.id}
+            >
+              {e.name}
+            </option>
+          ))}
+        </select>
       ),
     },
     {
@@ -91,7 +161,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           onChange={(e) => handlePayload('supplier_id', e.target.value)}
         >
           <option value={null} selected>
-            Pilih Opsi
+            Pilih Supplier
           </option>
           {suppliers.map((e, i) => (
             <option
@@ -104,174 +174,18 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           ))}
         </select>
       ),
-    },
-    {
-      label: 'Terms Of Payment',
-      state: 'terms_of_payment',
-      form: (
-        <input
-          disabled={data?.type === 'view'}
-          value={
-            data?.type !== 'add'
-              ? formData?.['terms_of_payment'] || data?.['terms_of_payment']
-              : formData?.['terms_of_payment'] || ''
-          }
-          required
-          type="text"
-          name="terms_of_payment"
-          className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
-          placeholder="Masukkan Terms Of Payment"
-          onChange={(e) => handlePayload('terms_of_payment', e.target.value)}
-        />
-      ),
-    },
-    {
-      label: 'Down Payment Method',
-      state: 'down_payment',
-      form: (
-        <input
-          disabled={data?.type === 'view'}
-          value={
-            data?.type !== 'add'
-              ? formData?.['down_payment'] || data?.['down_payment']
-              : formData?.['down_payment'] || ''
-          }
-          required
-          type="text"
-          name="down_payment"
-          className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
-          placeholder="Masukkan Down Payment Method"
-          onChange={(e) => handlePayload('down_payment', e.target.value)}
-        />
-      ),
-    },
-    {
-      label: 'Tanggal Mulai Kontrak',
-      state: 'start_date',
-      form: (
-        <input
-          disabled={data?.type === 'view'}
-          value={
-            data?.type !== 'add'
-              ? formData?.['start_date'] || data?.['start_date']
-              : formData?.['start_date'] || ''
-          }
-          required
-          type="date"
-          name="start_date"
-          className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
-          onChange={(e) => handlePayload('start_date', e.target.value)}
-        />
-      ),
-    },
-    {
-      label: 'Tanggal Berakhir Kontrak',
-      state: 'end_date',
-      form: (
-        <input
-          disabled={data?.type === 'view'}
-          value={
-            data?.type !== 'add'
-              ? formData?.['end_date'] || data?.['end_date']
-              : formData?.['end_date'] || ''
-          }
-          required
-          type="date"
-          name="end_date"
-          className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
-          onChange={(e) => handlePayload('end_date', e.target.value)}
-        />
-      ),
-    },
-    {
-      label: 'Pengingat Masa Kontrak',
-      state: 'reminder',
-      form: (
-        <select
-          disabled={data?.type === 'view'}
-          value={formData?.reminder}
-          required
-          name="reminder"
-          className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
-          placeholder="Pilih Pengingat Waktu"
-          onChange={(e) => handlePayload('reminder', e.target.value)}
-        >
-          <option value={null}>Pilih Opsi</option>
-          {reminders.map((e, i) => (
-            <option key={i} value={e} selected={data.type === 'edit' && e === data.reminder}>
-              {e} Hari
-            </option>
-          ))}
-        </select>
-      ),
-    },
-    {
-      label: 'Catatan',
-      state: 'notes',
-      form: (
-        <textarea
-          disabled={data?.type === 'view'}
-          value={
-            data?.type !== 'add'
-              ? formData?.['notes'] || data?.['notes']
-              : formData?.['notes'] || ''
-          }
-          required
-          name="notes"
-          className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
-          onChange={(e) => handlePayload('notes', e.target.value)}
-        ></textarea>
-      ),
-    },
-    {
-      label: 'Lampiran Kontrak',
-      state: 'attachment',
-      form: (
-        <React.Fragment>
-          {data.type === 'add' && formData?.attachment ? (
-            <span className="text-left">{formData.attachment.name}</span>
-          ) : (
-            <button
-              type="button"
-              className="flex w-3/4 items-center justify-center gap-1 rounded-full bg-[#06C2B1] px-3 py-2 text-center text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
-              onClick={() => {
-                if (data.type !== 'view') {
-                  hiddenFileInput.current.click()
-                  return
-                }
-
-                // Do Download File ...
-                download(data?.id)
-              }}
-            >
-              <ArrowUpOnSquareIcon className="h-5 w-5 flex-shrink-0" />
-              <span>{data?.type === 'view' ? 'Unduh' : 'Unggah'} Kontrak</span>
-            </button>
-          )}
-          <input
-            ref={hiddenFileInput}
-            type="file"
-            onChange={(e) => handlePayload('attachment', e.target.files[0])}
-            accept=".pdf, .jpg, .jpeg, .png"
-            name="attachment"
-            className="block hidden w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
-          />
-        </React.Fragment>
-      ),
-    },
+    }    
   ]
 
-  const addContract = async (e) => {
+  const addPlanItem = async (e) => {
     e.preventDefault()
-
-    const fd = new FormData()
-    Object.entries(formData).forEach(([key, value]) => {
-      fd.append(key, value)
-    })
 
     setLoading(true)
     try {
-      const resp = await createContract(fd)
+      const data = { ...formData }
+      data.weekly_avg = Number(data.weekly_avg)
+      data.monthly_avg = Number(data.monthly_avg)
+      const resp = await createPlanItem(data)
       if (resp.status === 201) {
         showToast('success', resp.message)
         setLoading(false)
@@ -285,20 +199,15 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
     }
   }
 
-  const editContract = async (e) => {
+  const editPurchaseItem = async (e) => {
     e.preventDefault()
     setLoading(true)
     try {
-      const fd = new FormData()
-      Object.entries(formData).forEach(([key, value]) => {
-        if (['supplier_name', 'id', 'created_at', 'updated_at', 'deleted_at', 'type'].includes(key)) { return }
-        if (key === 'attachment' && typeof(value) === 'string') return
 
-        fd.append(key, value)
-      })
-
-
-      const resp = await updateContract(fd, data.id)
+      const data = { ...formData }
+      data.weekly_avg = Number(data.weekly_avg)
+      data.monthly_avg = Number(data.monthly_avg)
+      const resp = await updatePlanItem(data, data.id)
       if (resp.status === 200) {
         showToast('success', resp.message)
         setLoading(false)
@@ -316,7 +225,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
   const deleteData = async () => {
     setLoading(true)
     try {
-      const resp = await deleteContract(data.id)
+      const resp = await deletePlanItem(data.id)
       if (resp.status === 200) {
         showToast('success', resp.message)
         setLoading(false)
