@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import Loading from '@/components/Loading'
 import { useAuth } from '@/context/auth'
+import { user_levels } from '@/lib/constants'
 import { getOrganizationList } from '@/services/organizations'
 import { createUser } from '@/services/users'
 import { showToast } from '@/util/helper'
@@ -8,7 +9,7 @@ import { useEffect, useState } from 'react'
 
 export default function ModalForm({ data, onClose }) {
   const { user } = useAuth();
-
+  console.log({ user })
   const [formData, setFormData] = useState({ ...data })
   const [loading, setLoading] = useState(false)
   const [selectOptions, setSelectOptions] = useState([])
@@ -23,15 +24,7 @@ export default function ModalForm({ data, onClose }) {
       }).catch((e) => console.error(e))
     }
 
-    setSelectOptions([
-      {
-        label: "Super Admin",
-        value: "Super Admin",
-      }, {
-        label: "Admin",
-        value: "Admin",
-      },
-    ])
+    setSelectOptions([...user_levels])
   }, [])
 
   if (!data) return <></>
@@ -44,16 +37,16 @@ export default function ModalForm({ data, onClose }) {
     user.level == "Super Admin" ?
       {
         label: 'Nama Usaha',
-        state: 'organization_name',
+        state: 'org_id',
         form: (
           <select
-            value={formData.organization_name}
+            value={formData.org_id}
             required
             type="text"
-            name="organization_name"
+            name="org_id"
             className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             placeholder="Pilih Nama Usaha"
-            onChange={(e) => handlePayload('organization_name', e.target.value)}
+            onChange={(e) => handlePayload('org_id', e.target.value)}
           >
             <option value={null}>Pilih Opsi</option>
             {selectOptions.map((e, i) => (

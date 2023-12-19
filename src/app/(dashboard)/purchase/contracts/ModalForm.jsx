@@ -71,7 +71,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           type="text"
           name="id"
           className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
-          placeholder="Masukkan ID Supplier"
+          placeholder="Masukkan ID Kontrak"
           onChange={(e) => handlePayload('id', e.target.value)}
         />
       ),
@@ -155,7 +155,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           required
           type="date"
           name="start_date"
-          className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
+          className="block w-2/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
           onChange={(e) => handlePayload('start_date', e.target.value)}
         />
       ),
@@ -173,7 +173,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           required
           type="date"
           name="end_date"
-          className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
+          className="align-left w-2/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
           onChange={(e) => handlePayload('end_date', e.target.value)}
         />
       ),
@@ -186,7 +186,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           value={formData?.reminder}
           required
           name="reminder"
-          className="block w-3/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
+          className="align-left w-2/4 rounded-md border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 disabled:bg-[#D9D9D9] sm:text-sm sm:leading-6"
           placeholder="Pilih Pengingat Waktu"
           onChange={(e) => handlePayload('reminder', e.target.value)}
         >

@@ -24,17 +24,26 @@ import { Menu, Transition } from '@headlessui/react'
 import { deleteBatchPlanItem, getPlanItemList } from '@/services/plan-items'
 import { NavbarContext } from '@/context/navbar'
 import { getUnitList } from '@/services/units'
+import { useRouter } from 'next/navigation'
 
 export default function Page() {
   const { user } = useAuth()
-  const { setNavbar } = useContext(NavbarContext)
+  const router = useRouter();
+  const { level } = user
+  const isFinance = user.level === 'Finance'
 
+  const { setNavbar } = useContext(NavbarContext)
   const [form, setForm] = useState()
   const [supplierList, setSupplierList] = useState([])
   const [unitList, setUnitList] = useState([])
   const [deleteIds, setDeleteIds] = useState([])
 
   useEffect(() => {
+    if (['Gudang', 'Operator'].includes(level)) {
+      showToast('error', 'Maaf, anda tidak mempunyai akses')
+      router.back()
+      return
+    }
     setNavbar({
       breadcrumbs: [
         { name: 'Pembelian', href: '/purchase', current: false },
@@ -94,7 +103,7 @@ export default function Page() {
     monthly_avg: '',
   })
 
-  const columns = [
+  let columns = [
     {
       name: 'ID',
       selector: (row) => row.id,
@@ -118,77 +127,83 @@ export default function Page() {
     {
       name: 'Nama Supplier',
       selector: (row) => row.supplier_name,
-    },
-    {
-      name: 'Aksi',
-      width: '300px',
-      selector: (row) => (
-        <div className="flex flex-row flex-wrap justify-between gap-1">
-          <button
-            onClick={() => setForm({ ...row, type: 'edit' })}
-            type="button"
-            className="inline-flex items-center gap-x-0.5 rounded-md bg-[#FBBC04] px-1.5 py-0.5 text-sm font-semibold !text-white text-white shadow-sm hover:bg-[#FBBC04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FBBC04]"
-          >
-            <PencilSquareIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
-            Ubah
-          </button>
-          <button
-            onClick={() => setForm({ ...row, type: 'delete' })}
-            type="button"
-            className="hover:bg-[#F24822]-500 focus-visible:outline-[#F24822]-600 inline-flex items-center gap-x-0.5 rounded-md bg-[#F24822] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-          >
-            <TrashIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
-            Hapus
-          </button>
-        </div>
-      ),
-    },
-    {
-      name: (
-        <div className="w-full">
-          <input
-            type="checkbox"
-            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-            onChange={() => {
-              if (deleteIds.length === data?.purchas_plan_items.length) {
-                setDeleteIds([])
-                return
-              }
-
-              let ids = []
-              for (let planItem of data?.purchas_plan_items) {
-                ids = [...ids, planItem.id]
-              }
-
-              setDeleteIds([...ids])
-            }}
-          />
-        </div>
-      ),
-      selector: (row) => (
-        <input
-          name="delete"
-          type="checkbox"
-          checked={deleteIds.filter((id) => id === row.id).length > 0}
-          onChange={() => {
-            console.log({ row })
-            let temp = [...deleteIds]
-            const isExist = temp.find((id) => id === row.id)
-            if (isExist) {
-              temp = temp.filter((item) => item !== row.id)
-              setDeleteIds([...temp])
-            } else {
-              console.log('else')
-              temp = [...temp, row.id]
-              setDeleteIds([...temp])
-            }
-            console.log({ temp })
-          }}
-          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-        />
-      ),
-    },
+    }   
   ]
+
+  if (!isFinance) {
+    columns = [
+      ...columns,
+      {
+        name: 'Aksi',
+        width: '300px',
+        selector: (row) => (
+          <div className="flex flex-row flex-wrap justify-between gap-1">
+            <button
+              onClick={() => setForm({ ...row, type: 'edit' })}
+              type="button"
+              className="inline-flex items-center gap-x-0.5 rounded-md bg-[#FBBC04] px-1.5 py-0.5 text-sm font-semibold !text-white text-white shadow-sm hover:bg-[#FBBC04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FBBC04]"
+            >
+              <PencilSquareIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
+              Ubah
+            </button>
+            <button
+              onClick={() => setForm({ ...row, type: 'delete' })}
+              type="button"
+              className="hover:bg-[#F24822]-500 focus-visible:outline-[#F24822]-600 inline-flex items-center gap-x-0.5 rounded-md bg-[#F24822] px-1.5 py-0.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              <TrashIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
+              Hapus
+            </button>
+          </div>
+        ),
+      },
+      {
+        name: (
+          <div className="w-full">
+            <input
+              type="checkbox"
+              className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+              onChange={() => {
+                if (deleteIds.length === data?.purchas_plan_items.length) {
+                  setDeleteIds([])
+                  return
+                }
+  
+                let ids = []
+                for (let planItem of data?.purchas_plan_items) {
+                  ids = [...ids, planItem.id]
+                }
+  
+                setDeleteIds([...ids])
+              }}
+            />
+          </div>
+        ),
+        selector: (row) => (
+          <input
+            name="delete"
+            type="checkbox"
+            checked={deleteIds.filter((id) => id === row.id).length > 0}
+            onChange={() => {
+              console.log({ row })
+              let temp = [...deleteIds]
+              const isExist = temp.find((id) => id === row.id)
+              if (isExist) {
+                temp = temp.filter((item) => item !== row.id)
+                setDeleteIds([...temp])
+              } else {
+                console.log('else')
+                temp = [...temp, row.id]
+                setDeleteIds([...temp])
+              }
+              console.log({ temp })
+            }}
+            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+          />
+        ),
+      },
+    ]
+  }
 
   const deleteBatch = async () => {
     setLoading(true)
@@ -256,144 +271,148 @@ export default function Page() {
               />
             </form>
             {/* Menu Button */}
-            <Menu as="div" className="relative inline-block text-left">
-              <div>
-                <Menu.Button className="ml-3 flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]">
-                  <PlusCircleIcon
-                    className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                    aria-hidden="true"
-                  />
-                  Tambah Purchase Request
-                  <ChevronDownIcon
-                    className="-mr-1 h-5 w-5 text-gray-400"
-                    aria-hidden="true"
-                  />
-                </Menu.Button>
-              </div>
+            {!isFinance && (
+              <Menu as="div" className="relative inline-block text-left">
+                <div>
+                  <Menu.Button className="ml-3 flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]">
+                    <PlusCircleIcon
+                      className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                      aria-hidden="true"
+                    />
+                    Tambah Purchase Request
+                    <ChevronDownIcon
+                      className="-mr-1 h-5 w-5 text-gray-400"
+                      aria-hidden="true"
+                    />
+                  </Menu.Button>
+                </div>
 
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
-              >
-                <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <div className="py-1">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          // onClick={download}
-                          className={classNames(
-                            active
-                              ? 'bg-gray-100 text-gray-900'
-                              : 'text-gray-700',
-                            'group flex items-center px-4 py-2 text-sm',
-                          )}
-                        >
-                          <PlusCircleIcon
-                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                            aria-hidden="true"
-                          />
-                          PR Mingguan
-                        </a>
-                      )}
-                    </Menu.Item>
-                  </div>
-                  <div className="py-1">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          // onClick={() => hiddenFileInput.current.click()}
-                          className={classNames(
-                            active
-                              ? 'bg-gray-100 text-gray-900'
-                              : 'text-gray-700',
-                            'group flex items-center px-4 py-2 text-sm',
-                          )}
-                        >
-                          <PlusCircleIcon
-                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                            aria-hidden="true"
-                          />
-                          PR Bulanan
-                        </a>
-                      )}
-                    </Menu.Item>
-                  </div>
-                </Menu.Items>
-              </Transition>
-            </Menu>
-          </div>
-          <div className="my-3 flex flex-row justify-between">
-            <button
-              type="button"
-              className="flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
-              onClick={() => {
-                setForm({
-                  supplier_id: '',
-                  unit_id: '541c38b5-91d5-4c65-a67b-3639061a79e8',
-                  name: '',
-                  weekly_avg: '',
-                  monthly_avg: '',
-                  type: 'add',
-                })
-              }}
-            >
-              <PlusCircleIcon className="h-5 w-5 flex-shrink-0" />
-              <span>Tambah Item</span>
-            </button>
-            <Menu as="div" className="relative inline-block text-left">
-              <div>
-                <Menu.Button
-                  className="flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252] disabled:opacity-50"
-                  disabled={deleteIds.length < 1}
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
                 >
-                  Aksi
-                  <ChevronDownIcon
-                    className="-mr-1 h-5 w-5 text-gray-400"
-                    aria-hidden="true"
-                  />
-                </Menu.Button>
-              </div>
-
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
-              >
-                <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <div className="rounded-full  py-1">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          onClick={deleteBatch}
-                          className={classNames(
-                            active
-                              ? 'bg-gray-100 text-gray-900'
-                              : 'text-gray-700',
-                            'group flex items-center rounded-full px-4 py-2 text-sm hover:bg-red hover:text-white',
-                          )}
-                        >
-                          Hapus
-                          <TrashIcon
-                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
-                            aria-hidden="true"
-                          />
-                        </a>
-                      )}
-                    </Menu.Item>
-                  </div>
-                </Menu.Items>
-              </Transition>
-            </Menu>
+                  <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <div className="py-1">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            // onClick={download}
+                            className={classNames(
+                              active
+                                ? 'bg-gray-100 text-gray-900'
+                                : 'text-gray-700',
+                              'group flex items-center px-4 py-2 text-sm',
+                            )}
+                          >
+                            <PlusCircleIcon
+                              className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                              aria-hidden="true"
+                            />
+                            PR Mingguan
+                          </a>
+                        )}
+                      </Menu.Item>
+                    </div>
+                    <div className="py-1">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            // onClick={() => hiddenFileInput.current.click()}
+                            className={classNames(
+                              active
+                                ? 'bg-gray-100 text-gray-900'
+                                : 'text-gray-700',
+                              'group flex items-center px-4 py-2 text-sm',
+                            )}
+                          >
+                            <PlusCircleIcon
+                              className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                              aria-hidden="true"
+                            />
+                            PR Bulanan
+                          </a>
+                        )}
+                      </Menu.Item>
+                    </div>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            )}
           </div>
+          {!isFinance && (
+            <div className="my-3 flex flex-row justify-between">
+              <button
+                type="button"
+                className="flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
+                onClick={() => {
+                  setForm({
+                    supplier_id: '',
+                    unit_id: '541c38b5-91d5-4c65-a67b-3639061a79e8',
+                    name: '',
+                    weekly_avg: '',
+                    monthly_avg: '',
+                    type: 'add',
+                  })
+                }}
+              >
+                <PlusCircleIcon className="h-5 w-5 flex-shrink-0" />
+                <span>Tambah Item</span>
+              </button>
+              <Menu as="div" className="relative inline-block text-left">
+                <div>
+                  <Menu.Button
+                    className="flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252] disabled:opacity-50"
+                    disabled={deleteIds.length < 1}
+                  >
+                    Aksi
+                    <ChevronDownIcon
+                      className="-mr-1 h-5 w-5 text-gray-400"
+                      aria-hidden="true"
+                    />
+                  </Menu.Button>
+                </div>
+
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
+                >
+                  <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <div className="rounded-full  py-1">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            onClick={deleteBatch}
+                            className={classNames(
+                              active
+                                ? 'bg-gray-100 text-gray-900'
+                                : 'text-gray-700',
+                              'group flex items-center rounded-full px-4 py-2 text-sm hover:bg-red hover:text-white',
+                            )}
+                          >
+                            Hapus
+                            <TrashIcon
+                              className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                              aria-hidden="true"
+                            />
+                          </a>
+                        )}
+                      </Menu.Item>
+                    </div>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            </div>
+          )}
           <div className="mt-8 flow-root">
             <ModalPopup
               height={form?.type === 'delete' ? 200 : 500}

@@ -1,4 +1,5 @@
 'use client'
+import { useAuth } from '@/context/auth'
 import { NavbarContext } from '@/context/navbar'
 import cartImage from '@/images/purchase/cart.png'
 import cartMarketplaceImage from '@/images/purchase/cart_marketplace.png'
