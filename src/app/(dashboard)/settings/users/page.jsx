@@ -21,7 +21,7 @@ import ModalForm from './ModalForm'
 export default function User() {
   const { user } = useAuth();
 
-  const { _, setNavbar } = useContext(NavbarContext)
+  const { setNavbar } = useContext(NavbarContext)
 
   useEffect(() => {
     setNavbar({

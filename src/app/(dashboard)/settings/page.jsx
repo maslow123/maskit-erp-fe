@@ -12,7 +12,7 @@ import Link from 'next/link'
 import { useContext, useEffect } from 'react'
 
 export default function Settings() {
-  const { _, setNavbar } = useContext(NavbarContext)
+  const { setNavbar } = useContext(NavbarContext)
 
   useEffect(() => {
     setNavbar({
@@ -27,7 +27,7 @@ export default function Settings() {
         />
       )
     })
-  }, [])
+  }, [setNavbar])
 
   const cards = [
     {
@@ -67,7 +67,7 @@ export default function Settings() {
             <div className="items-center truncate">
               <div className="flex flex-col items-center gap-4 space-x-3">
                 <h1 className="truncate text-2xl font-medium text-gray-900 ">{card.title}</h1>
-                <Image className="text-center" src={card.image} alt="" />
+                <Image className="text-center w-20 h-20" src={card.image} alt="" />
               </div>
             </div>
           </div>

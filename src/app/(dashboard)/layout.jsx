@@ -58,7 +58,7 @@ export default function RootLayout({ children }) {
               sidebarOpen={sidebarOpen}
               onSidebarOpen={(sidebarIsOpen) => setSidebarOpen(sidebarIsOpen)}
             />
-            <NavbarContext.Provider value={{ navbar, setNavbar }}>
+            <NavbarContext.Provider value={{ setNavbar }}>
               <div className="lg:pl-72">
                 <Navbar
                   breadcrumbs={navbar.breadcrumbs}

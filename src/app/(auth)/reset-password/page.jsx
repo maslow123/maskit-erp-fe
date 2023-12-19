@@ -44,7 +44,7 @@ export default function Login() {
 
     const validToken = validateToken(token)
     setTokenIsValid(validToken)
-  }, [])
+  }, [token])
 
   const onShown = (state) => {
     setPasswordShown({ ...passwordShown, [state]: !passwordShown[state] })

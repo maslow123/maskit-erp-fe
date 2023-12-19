@@ -22,7 +22,7 @@ import ModalForm from './ModalForm'
 export default function Unit() {
   const { user } = useAuth();
 
-  const { _, setNavbar } = useContext(NavbarContext)
+  const { setNavbar } = useContext(NavbarContext)
 
   useEffect(() => {
     setNavbar({
@@ -38,7 +38,7 @@ export default function Unit() {
         />
       )
     })
-  }, [])
+  }, [setNavbar])
 
   const [form, setForm] = useState()
   const [deleteId, setDeleteId] = useState()

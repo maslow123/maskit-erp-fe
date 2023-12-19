@@ -18,7 +18,7 @@ import DataTable from 'react-data-table-component'
 import ModalForm from './ModalForm'
 
 export default function Organizations() {
-  const { _, setNavbar } = useContext(NavbarContext)
+  const { setNavbar } = useContext(NavbarContext)
 
   useEffect(() => {
     setNavbar({
@@ -37,7 +37,7 @@ export default function Organizations() {
         />
       )
     })
-  }, [])
+  }, [setNavbar])
 
   const [organization, setOrganization] = useState()
   const [type, setType] = useState('')

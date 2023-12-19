@@ -11,7 +11,7 @@ import Link from 'next/link'
 import { useContext, useEffect, useState } from 'react'
 
 export default function Purchase() {
-  const { _, setNavbar } = useContext(NavbarContext)
+  const { setNavbar } = useContext(NavbarContext)
 
   useEffect(() => {
     setNavbar({
@@ -27,7 +27,7 @@ export default function Purchase() {
       )
     })
 
-  }, [])
+  }, [setNavbar])
 
   const cards = [
     {

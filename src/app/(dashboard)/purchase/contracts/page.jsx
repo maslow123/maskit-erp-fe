@@ -27,7 +27,7 @@ import { formatCommonDate } from '@/util/helper'
 export default function Page() {
   const { user } = useAuth()
 
-  const { _, setNavbar } = useContext(NavbarContext)
+  const { setNavbar } = useContext(NavbarContext)
 
   useEffect(() => {
     setNavbar({

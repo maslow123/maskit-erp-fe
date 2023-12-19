@@ -36,7 +36,7 @@ import { getUnitList } from '@/services/units'
 
 export default function Page() {
   const { user } = useAuth()
-  const { _, setNavbar } = useContext(NavbarContext)
+  const { setNavbar } = useContext(NavbarContext)
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [form, setForm] = useState()

@@ -8,7 +8,7 @@ import { Cog6ToothIcon } from '@heroicons/react/24/outline'
 import { useContext, useEffect, useState } from 'react'
 
 export default function Profile() {
-  const { _, setNavbar } = useContext(NavbarContext)
+  const { setNavbar } = useContext(NavbarContext)
 
   useEffect(() => {
     setNavbar({
@@ -27,7 +27,7 @@ export default function Profile() {
         />
       )
     })
-  }, [])
+  }, [setNavbar])
 
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({

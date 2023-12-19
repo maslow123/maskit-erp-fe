@@ -27,7 +27,7 @@ export function Sidebar({ onSidebarOpen, sidebarOpen }) {
   const navigation = [
     {
       name: 'Dashboard',
-      href: '/dashboard',
+      href: '/',
       icon: HomeIcon,
     }, {
       name: 'Pembelian',
