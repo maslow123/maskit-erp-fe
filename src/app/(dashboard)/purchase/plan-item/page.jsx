@@ -32,6 +32,7 @@ import { ArrowUpOnSquareIcon } from '@heroicons/react/20/solid'
 import { Menu, Transition } from '@headlessui/react'
 import { getPlanItemList } from '@/services/plan-items'
 import { NavbarContext } from '@/context/navbar'
+import { getUnitList } from '@/services/units'
 
 export default function Page() {
   const { user } = useAuth()
@@ -40,6 +41,7 @@ export default function Page() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [form, setForm] = useState()
   const [supplierList, setSupplierList] = useState([])
+  const [unitList, setUnitList] = useState([])
 
   useEffect(() => {
     setNavbar({
@@ -66,7 +68,13 @@ export default function Page() {
       setSupplierList([...resp?.data?.suppliers])
     }
 
+    const getUnits = async () => {
+      const resp = await getUnitList({ limit: 10000 })
+      setUnitList([...resp?.data?.units])
+    }
+
     getSuppliers()
+    getUnits()
   }, [])
 
   const download = async (contractID) => {
@@ -172,7 +180,11 @@ export default function Page() {
                 <span>Pilih Supplier</span>
 
                 <select
-                  onChange={(e) => {}}
+                  onChange={(e) => {
+                    onSearch({
+                      supplier_id: e.target.value
+                    })
+                  }}
                   name="sort"
                   id=""
                   className="w-[150px] appearance-none rounded-md border border-gray-200 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-blue-500 sm:text-sm"
@@ -309,6 +321,7 @@ export default function Page() {
             >
               {form && (
                 <ModalForm
+                  units={unitList}
                   suppliers={supplierList}
                   data={form}
                   onClose={(currentModalVisible) => {
@@ -316,7 +329,6 @@ export default function Page() {
                     setForm(undefined)
                     reload()
                   }}
-                  download={download}
                 />
               )}
             </ModalPopup>
