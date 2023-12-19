@@ -2,13 +2,13 @@
 
 import { headers } from '../headers'
 
-const deleteBatchSupplier = async (supplierIds) => {
+const deleteBatchPlanItem = async (supplierIds) => {
     const payload = {
         data: supplierIds
     }
     try {
         const response = await fetch(
-            `${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/suppliers/batch`,
+            `${process.env['NEXT_PUBLIC_API_SERVICE_URL']}/purchase-plan-item/batch`,
             {
                 method: 'DELETE',
                 body: JSON.stringify(payload),
@@ -27,4 +27,4 @@ const deleteBatchSupplier = async (supplierIds) => {
     }
 }
 
-export default deleteBatchSupplier
+export default deleteBatchPlanItem

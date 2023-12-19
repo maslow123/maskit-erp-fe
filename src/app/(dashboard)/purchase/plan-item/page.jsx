@@ -1,15 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 import ModalPopup from '@/components/ModalPopup'
-import { Navbar } from '@/components/Navbar'
-import { Sidebar } from '@/components/Sidebar'
 import { useAuth } from '@/context/auth'
 import '@/styles/tailwind.scss'
 import {
-  ArrowDownCircleIcon,
-  ArrowUpCircleIcon,
   ChevronDownIcon,
-  EyeIcon,
   MagnifyingGlassIcon,
   PencilSquareIcon,
   PlusCircleIcon,
@@ -22,15 +17,11 @@ import ModalForm from './ModalForm'
 import { useTable } from '@/hooks/use-table'
 import {
   classNames,
-  formatCommonDate,
-  formatDate,
   showToast,
 } from '@/util/helper'
 import { getSupplierList } from '@/services/suppliers'
-import { downloadContract, getContractList } from '@/services/contracts'
-import { ArrowUpOnSquareIcon } from '@heroicons/react/20/solid'
 import { Menu, Transition } from '@headlessui/react'
-import { getPlanItemList } from '@/services/plan-items'
+import { deleteBatchPlanItem, getPlanItemList } from '@/services/plan-items'
 import { NavbarContext } from '@/context/navbar'
 import { getUnitList } from '@/services/units'
 
@@ -38,10 +29,10 @@ export default function Page() {
   const { user } = useAuth()
   const { setNavbar } = useContext(NavbarContext)
 
-  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [form, setForm] = useState()
   const [supplierList, setSupplierList] = useState([])
   const [unitList, setUnitList] = useState([])
+  const [deleteIds, setDeleteIds] = useState([])
 
   useEffect(() => {
     setNavbar({
@@ -77,9 +68,6 @@ export default function Page() {
     getUnits()
   }, [])
 
-  const download = async (contractID) => {
-    await downloadContract(contractID)
-  }
   const {
     data,
     setData,
@@ -99,7 +87,7 @@ export default function Page() {
     onSearch,
     reload,
   } = useTable(getPlanItemList, {
-    supplier_id: '',
+    _id: '',
     unit_id: '541c38b5-91d5-4c65-a67b-3639061a79e8',
     name: '',
     weekly_avg: '',
@@ -110,22 +98,28 @@ export default function Page() {
     {
       name: 'ID',
       selector: (row) => row.id,
-    }, {
+    },
+    {
       name: 'Nama Item',
       selector: (row) => row.name,
-    }, {
+    },
+    {
       name: 'Rata Konsumsi / Minggu',
       selector: (row) => row.weekly_avg,
-    }, {
+    },
+    {
       name: 'Rata Konsumsi / Bulan',
       selector: (row) => row.monthly_avg,
-    }, {
+    },
+    {
       name: 'Unit',
       selector: (row) => row.unit_name,
-    }, {
+    },
+    {
       name: 'Nama Supplier',
       selector: (row) => row.supplier_name,
-    }, {
+    },
+    {
       name: 'Aksi',
       width: '300px',
       selector: (row) => (
@@ -148,13 +142,26 @@ export default function Page() {
           </button>
         </div>
       ),
-    }, {
+    },
+    {
       name: (
         <div className="w-full">
           <input
             type="checkbox"
             className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-            onChange={() => {}}
+            onChange={() => {
+              if (deleteIds.length === data?.purchas_plan_items.length) {
+                setDeleteIds([])
+                return
+              }
+
+              let ids = []
+              for (let planItem of data?.purchas_plan_items) {
+                ids = [...ids, planItem.id]
+              }
+
+              setDeleteIds([...ids])
+            }}
           />
         </div>
       ),
@@ -162,14 +169,44 @@ export default function Page() {
         <input
           name="delete"
           type="checkbox"
-          checked={false}
-          onChange={() => {}}
+          checked={deleteIds.filter((id) => id === row.id).length > 0}
+          onChange={() => {
+            console.log({ row })
+            let temp = [...deleteIds]
+            const isExist = temp.find((id) => id === row.id)
+            if (isExist) {
+              temp = temp.filter((item) => item !== row.id)
+              setDeleteIds([...temp])
+            } else {
+              console.log('else')
+              temp = [...temp, row.id]
+              setDeleteIds([...temp])
+            }
+            console.log({ temp })
+          }}
           className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
         />
       ),
     },
   ]
 
+  const deleteBatch = async () => {
+    setLoading(true)
+    try {
+      const resp = await deleteBatchPlanItem(deleteIds)
+
+      if (resp.status >= 300) {
+        throw new Error(resp.message)
+      }
+
+      showToast('success', resp.message)
+      reload()
+    } catch (err) {
+      showToast('error', err?.message || 'Something Wrong')
+    } finally {
+      setLoading(false)
+    }
+  }
   return (
     <>
       <div>
@@ -182,7 +219,7 @@ export default function Page() {
                 <select
                   onChange={(e) => {
                     onSearch({
-                      supplier_id: e.target.value
+                      supplier_id: e.target.value,
                     })
                   }}
                   name="sort"
@@ -290,7 +327,7 @@ export default function Page() {
               </Transition>
             </Menu>
           </div>
-          <div className="my-3">
+          <div className="my-3 flex flex-row justify-between">
             <button
               type="button"
               className="flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252]"
@@ -308,6 +345,54 @@ export default function Page() {
               <PlusCircleIcon className="h-5 w-5 flex-shrink-0" />
               <span>Tambah Item</span>
             </button>
+            <Menu as="div" className="relative inline-block text-left">
+              <div>
+                <Menu.Button
+                  className="flex items-center justify-between gap-1 rounded-full bg-blue-theme px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-theme focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5A5252] disabled:opacity-50"
+                  disabled={deleteIds.length < 1}
+                >
+                  Aksi
+                  <ChevronDownIcon
+                    className="-mr-1 h-5 w-5 text-gray-400"
+                    aria-hidden="true"
+                  />
+                </Menu.Button>
+              </div>
+
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className="rounded-full  py-1">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          onClick={deleteBatch}
+                          className={classNames(
+                            active
+                              ? 'bg-gray-100 text-gray-900'
+                              : 'text-gray-700',
+                            'group flex items-center rounded-full px-4 py-2 text-sm hover:bg-red hover:text-white',
+                          )}
+                        >
+                          Hapus
+                          <TrashIcon
+                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+                            aria-hidden="true"
+                          />
+                        </a>
+                      )}
+                    </Menu.Item>
+                  </div>
+                </Menu.Items>
+              </Transition>
+            </Menu>
           </div>
           <div className="mt-8 flow-root">
             <ModalPopup
