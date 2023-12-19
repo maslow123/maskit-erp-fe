@@ -30,7 +30,7 @@ export default function AuthProvider({ children }) {
                 setUser({ ...userData });
 
                 if (['/login', '/register'].includes(pathname)) {
-                    router.push('/dashboard');
+                    router.push('/');
                 }
                 return
             }

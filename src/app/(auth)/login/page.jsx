@@ -45,7 +45,7 @@ export default function Login() {
         org_name: resp.data.org_name,
       }));
       setIsLoading(false)
-      window.location.href = '/dashboard';
+      window.location.href = '/';
     } catch (e) {
       showToast('error', JSON.stringify(e))
     }
