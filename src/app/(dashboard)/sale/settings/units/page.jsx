@@ -73,12 +73,10 @@ export default function Unit() {
     {
       name: 'ID',
       selector: (row) => row.id,
-    },
-    {
+    }, {
       name: 'Nama Unit',
       selector: (row) => row.name,
-    },
-    {
+    }, {
       name: 'Aksi',
       selector: (row) => (
         <div className="flex flex-row flex-wrap justify-between gap-1">

@@ -80,28 +80,22 @@ export default function Page() {
     {
       name: 'ID',
       selector: (row) => row.id,
-    },
-    {
+    }, {
       name: 'Nama Supplier',
       selector: (row) => row.name,
-    },
-    {
+    }, {
       name: 'Nama PIC',
       selector: (row) => row.pic_name,
-    },
-    {
+    }, {
       name: 'No HP',
       selector: (row) => row.phone_number,
-    },
-    {
+    }, {
       name: 'Email',
       selector: (row) => row.email,
-    },
-    {
+    }, {
       name: 'Alamat',
       selector: (row) => row.address,
-    },
-    {
+    }, {
       name: 'Aksi',
       selector: (row) => (
         <div className="flex flex-row flex-wrap justify-between gap-1">
@@ -123,8 +117,7 @@ export default function Page() {
           </button>
         </div>
       ),
-    },
-    {
+    }, {
       name: (
         <div className="w-full">
           <input

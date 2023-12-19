@@ -1,69 +1,58 @@
 'use client'
-import { Fragment, useState } from 'react'
+
+import erp_logo from '@/images/logos/erp-logo.png'
 import { Dialog, Transition } from '@headlessui/react'
 import {
-  DocumentChartBarIcon,
-  Cog6ToothIcon,
-  ChartBarIcon,
+  ArrowRightOnRectangleIcon,
   BeakerIcon,
+  ChartBarIcon,
+  Cog6ToothIcon,
+  DocumentChartBarIcon,
   HomeIcon,
   ServerStackIcon,
-  XMarkIcon,
   ShoppingCartIcon,
-  ArrowRightCircleIcon,
-  ArrowRightOnRectangleIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline'
-import erp_logo from '@/images/logos/erp-logo.png'
 import Image from 'next/image'
-import { CheckCircleIcon } from '@/icons'
+import { usePathname } from 'next/navigation'
+import { Fragment } from 'react'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export function Sidebar({ onSidebarOpen, sidebarOpen, tab }) {
+export function Sidebar({ onSidebarOpen, sidebarOpen }) {
+  const pathname = usePathname();
+
   const navigation = [
     {
       name: 'Dashboard',
       href: '/dashboard',
       icon: HomeIcon,
-      current: tab === 'dashboard',
-    },
-    {
+    }, {
       name: 'Pembelian',
       href: '/purchase',
       icon: ShoppingCartIcon,
-      current: tab === 'purchase',
-    },
-    {
+    }, {
       name: 'Persediaan',
       href: '#',
       icon: ServerStackIcon,
-      current: tab === 'dashboard',
-    },
-    {
+    }, {
       name: 'Produksi',
       href: '#',
       icon: BeakerIcon,
-      current: tab === 'dashboard',
-    },
-    {
+    }, {
       name: 'Penjualan',
       href: '/sale',
       icon: DocumentChartBarIcon,
-      current: tab === 'dashboard',
-    },
-    {
+    }, {
       name: 'Keuangan',
       href: '#',
       icon: ChartBarIcon,
-      current: tab === 'dashboard',
-    },
-    {
+    }, {
       name: 'Pengaturan',
       href: '/settings',
       icon: Cog6ToothIcon,
-      current: tab === 'settings',
     },
   ]
   return (
@@ -143,7 +132,7 @@ export function Sidebar({ onSidebarOpen, sidebarOpen, tab }) {
                               <a
                                 href={item.href}
                                 className={classNames(
-                                  item.current
+                                  pathname.includes(item.href)
                                     ? 'bg-blue text-white'
                                     : 'text-indigo-200 hover:bg-blue hover:text-white',
                                   'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
@@ -151,7 +140,7 @@ export function Sidebar({ onSidebarOpen, sidebarOpen, tab }) {
                               >
                                 <item.icon
                                   className={classNames(
-                                    item.current
+                                    pathname.includes(item.href)
                                       ? 'text-white'
                                       : 'text-indigo-200 group-hover:text-white',
                                     'h-6 w-6 shrink-0',
@@ -198,7 +187,7 @@ export function Sidebar({ onSidebarOpen, sidebarOpen, tab }) {
                       <a
                         href={item.href}
                         className={classNames(
-                          item.current
+                          pathname.includes(item.href)
                             ? 'bg-blue text-white'
                             : 'text-indigo-200 hover:bg-blue hover:text-white',
                           'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
@@ -206,7 +195,7 @@ export function Sidebar({ onSidebarOpen, sidebarOpen, tab }) {
                       >
                         <item.icon
                           className={classNames(
-                            item.current
+                            pathname.includes(item.href)
                               ? 'text-white'
                               : 'text-indigo-200 group-hover:text-white',
                             'h-6 w-6 shrink-0',

@@ -73,8 +73,7 @@ export default function Profile() {
           onChange={(e) => handlePayload('name', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Bidang Perusahaan',
       state: 'business_field',
       form: (
@@ -88,8 +87,7 @@ export default function Profile() {
           onChange={(e) => handlePayload('business_field', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Alamat Perusahaan',
       state: 'address',
       form: (
@@ -102,8 +100,7 @@ export default function Profile() {
           onChange={(e) => handlePayload('address', e.target.value)}
         ></textarea>
       ),
-    },
-    {
+    }, {
       label: 'Nama Penanggung Jawab Perusahaan',
       state: 'pic_name',
       form: (
@@ -117,8 +114,7 @@ export default function Profile() {
           onChange={(e) => handlePayload('pic_name', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'No. Telp. Perusahaan',
       state: 'phone_number',
       form: (
@@ -132,8 +128,7 @@ export default function Profile() {
           onChange={(e) => handlePayload('phone_number', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Fax Perusahaan',
       state: 'fax_number',
       form: (
@@ -147,8 +142,7 @@ export default function Profile() {
           onChange={(e) => handlePayload('fax_number', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Website',
       state: 'website',
       form: (
@@ -162,8 +156,7 @@ export default function Profile() {
           onChange={(e) => handlePayload('website', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Email Perusahaan',
       state: 'email',
       form: (
@@ -177,8 +170,7 @@ export default function Profile() {
           onChange={(e) => handlePayload('email', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Bank',
       state: 'bank_name',
       form: (
@@ -192,8 +184,7 @@ export default function Profile() {
           onChange={(e) => handlePayload('bank_name', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'KCP Bank',
       state: 'bank_branch',
       form: (
@@ -207,8 +198,7 @@ export default function Profile() {
           onChange={(e) => handlePayload('bank_branch', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'No. Rekening',
       state: 'bank_acc_no',
       form: (

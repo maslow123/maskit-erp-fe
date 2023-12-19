@@ -34,6 +34,8 @@ export default function ModalForm({ data, onClose }) {
     ])
   }, [])
 
+  if (!data) return <></>
+
   const handlePayload = (key, value) => {
     setFormData((prevData) => ({ ...prevData, [key]: value }))
   }
@@ -78,8 +80,7 @@ export default function ModalForm({ data, onClose }) {
             ))}
           </select>
         ),
-      },
-    {
+      }, {
       label: 'Nama Pengguna',
       state: 'name',
       form: (
@@ -93,8 +94,7 @@ export default function ModalForm({ data, onClose }) {
           onChange={(e) => handlePayload('name', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Email',
       state: 'email',
       form: (
@@ -108,8 +108,7 @@ export default function ModalForm({ data, onClose }) {
           onChange={(e) => handlePayload('email', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Kata Sandi',
       state: 'password',
       form: (

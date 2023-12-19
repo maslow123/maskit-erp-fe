@@ -76,8 +76,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           onChange={(e) => handlePayload('name', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Rata Konsumsi / Minggu',
       state: 'weekly_avg',
       form: (
@@ -96,8 +95,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           onChange={(e) => handlePayload('weekly_avg', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Rata Konsumsi / Bulan',
       state: 'monthly_avg',
       form: (
@@ -116,8 +114,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           onChange={(e) => handlePayload('monthly_avg', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Unit',
       state: 'supplier_id',
       form: (
@@ -145,8 +142,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           ))}
         </select>
       ),
-    },
-    {
+    }, {
       label: 'Nama Supplier',
       state: 'supplier_id',
       form: (

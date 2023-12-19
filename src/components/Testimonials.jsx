@@ -17,8 +17,7 @@ const testimonials = [
         role: 'CEO at Lynch LLC',
         image: avatarImage1,
       },
-    },
-    {
+    }, {
       content:
         'I’m trying to get a hold of someone in support, I’m in a lot of trouble right now and they are saying it has something to do with my books. Please get back to me right away.',
       author: {
@@ -37,8 +36,7 @@ const testimonials = [
         role: 'Founder of Kiehn and Sons',
         image: avatarImage5,
       },
-    },
-    {
+    }, {
       content:
         'There are so many things I had to do with my old software that I just don’t do at all with TaxPal. Suspicious but I can’t say I don’t love it.',
       author: {
@@ -57,8 +55,7 @@ const testimonials = [
         role: 'Founder of West Inc',
         image: avatarImage3,
       },
-    },
-    {
+    }, {
       content:
         'This is the fourth email I’ve sent to your support team. I am literally being held in jail for tax fraud. Please answer your damn emails, this is important.',
       author: {

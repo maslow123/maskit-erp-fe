@@ -39,8 +39,7 @@ export default function Organizations() {
     })
   }, [])
 
-  const [modalVisible, setModalVisible] = useState(false)
-  const [organization, setOrganization] = useState({})
+  const [organization, setOrganization] = useState()
   const [type, setType] = useState('')
 
   const isInitialRender = useRef(true)
@@ -74,28 +73,22 @@ export default function Organizations() {
       isInitialRender.current = false
       return
     }
-
-    setModalVisible(true)
   }, [organization, type])
 
   const columns = [
     {
       name: 'ID',
       selector: (row) => row.id,
-    },
-    {
+    }, {
       name: 'Nama Usaha',
       selector: (row) => row.name,
-    },
-    {
+    }, {
       name: 'Nama Pengguna',
       selector: (row) => row.pic_name,
-    },
-    {
+    }, {
       name: 'Email',
       selector: (row) => row.email,
-    },
-    {
+    }, {
       name: 'Aksi',
       selector: (row) => (
         <div className="flex flex-row flex-wrap justify-between gap-1">
@@ -173,13 +166,21 @@ export default function Organizations() {
       <div className="mt-8 flow-root">
         <ModalPopup
           height={type !== 'delete' ? 800 : 300}
-          visible={modalVisible}
-          onClose={(currentModalVisible) => reload()}
+          visible={organization}
+          onClose={(currentModalVisible) => {
+            if (currentModalVisible) return
+            setOrganization(undefined)
+            reload()
+          }}
         >
           <ModalForm
             type={type}
             data={organization}
-            onClose={(currentModalVisible) => reload()}
+            onClose={(currentModalVisible) => {
+              if (currentModalVisible) return
+              setOrganization(undefined)
+              reload()
+            }}
           />
         </ModalPopup>
         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">

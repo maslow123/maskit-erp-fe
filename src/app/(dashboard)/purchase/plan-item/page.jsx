@@ -102,28 +102,22 @@ export default function Page() {
     {
       name: 'ID',
       selector: (row) => row.id,
-    },
-    {
+    }, {
       name: 'Nama Item',
       selector: (row) => row.name,
-    },
-    {
+    }, {
       name: 'Rata Konsumsi / Minggu',
       selector: (row) => row.weekly_avg,
-    },
-    {
+    }, {
       name: 'Rata Konsumsi / Bulan',
       selector: (row) => row.monthly_avg,
-    },
-    {
+    }, {
       name: 'Unit',
       selector: (row) => row.unit_name,
-    },
-    {
+    }, {
       name: 'Nama Supplier',
       selector: (row) => row.supplier_name,
-    },
-    {
+    }, {
       name: 'Aksi',
       width: '300px',
       selector: (row) => (
@@ -146,8 +140,7 @@ export default function Page() {
           </button>
         </div>
       ),
-    },
-    {
+    }, {
       name: (
         <div className="w-full">
           <input

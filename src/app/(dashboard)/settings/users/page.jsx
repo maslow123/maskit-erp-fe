@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client'
+import '@/styles/tailwind.scss'
+
 import ModalPopup from '@/components/ModalPopup'
 import { useAuth } from '@/context/auth'
 import { NavbarContext } from '@/context/navbar'
 import { useTable } from '@/hooks/use-table'
 import { deleteUser, getUserList } from '@/services/users'
-import '@/styles/tailwind.scss'
 import {
   Cog6ToothIcon,
   MagnifyingGlassIcon,
@@ -40,7 +41,7 @@ export default function User() {
       )
     })
   }, [])
-  
+
   const [form, setForm] = useState()
   const [deleteId, setDeleteId] = useState()
 
@@ -78,16 +79,13 @@ export default function User() {
     } : {
       name: 'Level Pengguna',
       selector: (row) => row.level,
-    },
-    {
+    }, {
       name: 'Nama Pengguna',
       selector: (row) => row.name,
-    },
-    {
+    }, {
       name: 'Email',
       selector: (row) => row.email,
-    },
-    {
+    }, {
       name: 'Aksi',
       selector: (row) => (
         <div className="flex flex-row flex-wrap justify-between gap-1">
@@ -172,21 +170,21 @@ export default function User() {
         <div className="mt-8 flow-root">
           <ModalPopup
             height={450}
-            visible={form != undefined}
+            visible={form !== undefined}
             onClose={(currentModalVisible) => {
               if (currentModalVisible) return
               setForm(undefined)
               reload()
             }}
           >
-            {form && <ModalForm
+            <ModalForm
               data={form}
               onClose={(currentModalVisible) => {
                 if (currentModalVisible) return
                 setForm(undefined)
                 reload()
               }}
-            />}
+            />
           </ModalPopup>
           <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -213,7 +211,10 @@ export default function User() {
       <ModalPopup
         height={150}
         visible={deleteId}
-        onClose={(currentModalVisible) => setDeleteId(undefined)}
+        onClose={(currentModalVisible) => {
+          if (currentModalVisible) return
+          setDeleteId(undefined)
+        }}
       >
         <div className="py-5 flex-1 text-center">
           <span>Anda yakin ingin menghapus data ini?</span>

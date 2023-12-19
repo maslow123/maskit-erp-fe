@@ -75,8 +75,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           onChange={(e) => handlePayload('id', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Nama Supplier',
       state: 'supplier_id',
       form: (
@@ -104,8 +103,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           ))}
         </select>
       ),
-    },
-    {
+    }, {
       label: 'Terms Of Payment',
       state: 'terms_of_payment',
       form: (
@@ -124,8 +122,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           onChange={(e) => handlePayload('terms_of_payment', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Down Payment Method',
       state: 'down_payment',
       form: (
@@ -144,8 +141,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           onChange={(e) => handlePayload('down_payment', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Tanggal Mulai Kontrak',
       state: 'start_date',
       form: (
@@ -163,8 +159,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           onChange={(e) => handlePayload('start_date', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Tanggal Berakhir Kontrak',
       state: 'end_date',
       form: (
@@ -182,8 +177,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           onChange={(e) => handlePayload('end_date', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Pengingat Masa Kontrak',
       state: 'reminder',
       form: (
@@ -204,8 +198,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           ))}
         </select>
       ),
-    },
-    {
+    }, {
       label: 'Catatan',
       state: 'notes',
       form: (
@@ -222,8 +215,7 @@ export default function ModalForm({ data, onClose, suppliers, download }) {
           onChange={(e) => handlePayload('notes', e.target.value)}
         ></textarea>
       ),
-    },
-    {
+    }, {
       label: 'Lampiran Kontrak',
       state: 'attachment',
       form: (

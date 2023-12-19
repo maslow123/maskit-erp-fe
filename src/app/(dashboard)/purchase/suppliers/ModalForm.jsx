@@ -72,8 +72,7 @@ export default function ModalForm({ data, onClose }) {
           onChange={(e) => handlePayload('id', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Nama Supplier',
       state: 'name',
       form: (
@@ -91,8 +90,7 @@ export default function ModalForm({ data, onClose }) {
           onChange={(e) => handlePayload('name', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Nama PIC',
       state: 'name',
       form: (
@@ -110,8 +108,7 @@ export default function ModalForm({ data, onClose }) {
           onChange={(e) => handlePayload('pic_name', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Nomor Handphone',
       state: 'name',
       form: (
@@ -129,8 +126,7 @@ export default function ModalForm({ data, onClose }) {
           onChange={(e) => handlePayload('phone_number', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Email',
       state: 'email',
       form: (
@@ -148,8 +144,7 @@ export default function ModalForm({ data, onClose }) {
           onChange={(e) => handlePayload('email', e.target.value)}
         />
       ),
-    },
-    {
+    }, {
       label: 'Alamat',
       state: 'address',
       form: (

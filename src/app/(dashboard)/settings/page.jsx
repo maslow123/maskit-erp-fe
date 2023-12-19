@@ -34,23 +34,19 @@ export default function Settings() {
       title: 'Manajemen Organisasi',
       image: companyImage,
       href: '/settings/organizations'
-    },
-    {
+    }, {
       title: 'Manajemen Pengguna',
       image: usersImage,
       href: '/settings/users'
-    },
-    {
+    }, {
       title: 'Identitas Organisasi',
       image: townImage,
       href: '/settings/profile'
-    },
-    {
+    }, {
       title: 'xxxxx',
       image: cartImage,
       href: '#'
-    },
-    {
+    }, {
       title: 'xxxxx',
       image: documentImage,
       href: '#'

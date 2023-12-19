@@ -96,12 +96,10 @@ export default function Page() {
     {
       label: 'ID',
       value: 'id'
-    },
-    {
+    }, {
       label: 'Supplier',
       value: 'supplier_name'
-    },
-    {
+    }, {
       label: 'Berakhir Kontrak',
       value: 'end_date'
     },
@@ -110,28 +108,22 @@ export default function Page() {
     {
       name: 'ID',
       selector: (row) => row.id,
-    },
-    {
+    }, {
       name: 'Nama Supplier',
       selector: (row) => row.supplier_name,
-    },
-    {
+    }, {
       name: 'Term Of Payment',
       selector: (row) => row.terms_of_payment,
-    },
-    {
+    }, {
       name: 'Down Payment Method',
       selector: (row) => row.down_payment,
-    },
-    {
+    }, {
       name: 'Tanggal Berakhir Kontrak',
       selector: (row) => formatCommonDate(row.start_date),
-    },
-    {
+    }, {
       name: 'Catatan',
       selector: (row) => row.notes,
-    },
-    {
+    }, {
       name: 'Lampiran Kontrak',
       selector: (row) => (
         <button
@@ -142,8 +134,7 @@ export default function Page() {
           Unduh
         </button>
       ),
-    },
-    {
+    }, {
       name: 'Aksi',
       selector: (row) => (
         <div className="flex flex-row flex-wrap justify-between gap-1">

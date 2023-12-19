@@ -34,23 +34,19 @@ export default function Purchase() {
       title: 'Manajemen Pemasok',
       image: supplierImage,
       href: '/purchase/suppliers'
-    },
-    {
+    }, {
       title: 'Manajemen Kontrak',
       image: contractImage,
       href: '/purchase/contracts'
-    },
-    {
+    }, {
       title: 'Perencanaan Pembelian',
       image: purchasePlanImage,
       href: '/purchase/plan-item'
-    },
-    {
+    }, {
       title: 'Pembelian Bahan Baku dan Operasional',
       image: cartImage,
       href: '#'
-    },
-    {
+    }, {
       title: 'Pembelian Marketplace',
       image: cartMarketplaceImage,
       href: '#'
